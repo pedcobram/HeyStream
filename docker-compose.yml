@@ -1,0 +1,51 @@
+version: "3"
+services: 
+  api-gateway:
+    build: "./api-gateway"
+    depends_on: 
+      - users-service
+    ports:
+      - 7000:7000
+    volumes:
+      - ./api-gateway:/opt/app
+
+  users-service:
+    build: "./users-service"
+    depends_on: 
+      - db
+    environment: 
+      - DB_URI=mysql://root:password@db/db?charset=UTF8
+    ports:
+      - 7101:7101
+    volumes:
+      - ./users-service:/opt/app  
+
+  youtube-service:
+    build: "./youtube-service"
+    depends_on: 
+      - db
+    environment: 
+      - DB_URI=mysql://root:password@db/db?charset=UTF8
+    ports:
+      - 7102:7102
+    volumes:
+      - ./youtube-service:/opt/app 
+
+  twitch-service:
+    build: "./twitch-service"
+    depends_on: 
+      - db
+    environment: 
+      - DB_URI=mysql://root:password@db/db?charset=UTF8
+    ports:
+      - 7103:7103
+    volumes:
+      - ./twitch-service:/opt/app 
+
+  db:
+    environment: 
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=db
+    image: mysql:5.7.20
+    ports:
+      - 0.0.0.0:7201:3306

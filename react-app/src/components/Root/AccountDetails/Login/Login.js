@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 
@@ -9,7 +9,7 @@ import TextInput from "#root/components/shared/TextInput";
 import { useDispatch, useSelector} from "react-redux";
 import { setSession } from "#root/store/ducks/session";
 
-import Alert from "react-bootstrap/Alert"
+import { MDBAlert } from 'mdbreact';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -46,16 +46,15 @@ const mutation = gql`
 
 const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
     const dispatch = useDispatch();
-    const [createUserSession] = useMutation(mutation)
-
+    const [createUserSession, {data, error}] = useMutation(mutation)
+    
     const {
         formState: { isSubmitting },
         handleSubmit,
-        register,
-        errors
+        register
     } = useForm(); 
 
-    const onSubmit = handleSubmit(async ({ email, password }) => {
+    const onSubmit = handleSubmit(async ({ email, password }) => {   
         const {
             data: { createUserSession: createdSession }
         } = await createUserSession({ 
@@ -63,7 +62,7 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
                 email, 
                 password 
             } 
-        });
+        })
         dispatch(setSession(createdSession));
     })
 
@@ -74,6 +73,13 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
     return (
         <div style={style}> 
             <form className="" onSubmit = { onSubmit }>
+                <Label>
+                    {error?
+                        <MDBAlert dismiss color="warning">
+                            {error?.message.replace("GraphQL error: ", "")}
+                        </MDBAlert>
+                    :null}
+                </Label>
                 <Label>
                     <LabelText className="input-group-text">Email</LabelText>
                     <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />

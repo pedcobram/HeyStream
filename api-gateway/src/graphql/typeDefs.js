@@ -13,6 +13,12 @@ const typeDefs = gql`
         expiresAt: Date!
         id: ID!
         user: User!
+        errors: [Error]!
+    }
+
+    type Error {
+        field: String!
+        messages: [String!]!
     }
 
     type Mutation {

@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import * as yup from "yup";
@@ -43,8 +43,11 @@ const validationSchema = yup.object().shape({
   password: yup
     .string()
     .required()
-    .test("sameAsConfirmPassword", "${path} is not the same as the confirmation password", function() {
-      return this.parent.password === this.parent.confirmPassword;
+    .test("sameAsConfirmPassword", "${path} is not the same as the confirmation password", function(item) {
+      console.log(this.parent.password)
+      console.log("eyyy")
+      return (this.parent.password === this.parent.confirmPassword)
+      
     })
 });
 
@@ -53,7 +56,9 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
     formState: { isSubmitting, isValid },
     handleSubmit,
     register,
-    reset
+    reset,
+    watch,
+    errors
   } = useForm({ mode: "onChange", validationSchema });
   const [createUser] = useMutation(mutation);
 
@@ -66,6 +71,9 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
   const style = {
     width: "15rem"
   }
+
+  const password = useRef({});
+  password.current = watch("password", "");
 
   return (
     <div style={style}>
@@ -80,9 +88,13 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
         </Label>
         <Label>
           <LabelText className="input-group-text">Confirm Password</LabelText>
-          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="confirmPassword" type="password" ref={register} />
+          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="confirmPassword" type="password" ref={register({
+            validate: value => value === password.current || "Passwords do not match"})} 
+          />
+          
+          {errors.confirmPassword.type}
         </Label>
-        <SignUpButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit">
+        <SignUpButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit" onSubmit={onSubmit}>
           Sign Up
         </SignUpButton>{" "}
         <OrSignUp>

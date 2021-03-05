@@ -11,7 +11,7 @@ const setupRoutes = app => {
 
   app.post("/sessions", async (req, res, next) => {
     if (!req.body.email || !req.body.password) {
-      return next(new Error("Invalid body!"));
+      return next(new Error("Please fill in email and password!"));
     }
 
     try {
@@ -74,7 +74,7 @@ const setupRoutes = app => {
 
   app.post("/users", async (req, res, next) => {
       if (!req.body.email || !req.body.password) {
-        return next(new Error("Invalid body!"));
+        return next(new Error("Please fill in email and password!"));
       }
   
       try {

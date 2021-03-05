@@ -4,11 +4,13 @@ import React from "react";
 import { ApolloProvider as ApolloHooksProvider } from "@apollo/react-hooks";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
-import { createGlobalStyle, ThemeProvider } from "styled-components"
+import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { BrowserRouter } from "react-router-dom";
 
 import graphqlClient from "#root/api/graphql/graphqlClient"
 import Root from "#root/components/Root"
 import store from "./store"
+import Router from "./Router"
 
 import * as theme from "./theme"
 
@@ -28,13 +30,15 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 render(
-    <Provider store={store}>
-        <ApolloHooksProvider client={graphqlClient}>
-            <ThemeProvider theme={theme}>
-                <GlobalStyle /> 
-                <Root /> 
-            </ThemeProvider>
-        </ApolloHooksProvider>
-    </Provider>, 
+    <BrowserRouter>
+        <Provider store={store}>
+            <ApolloHooksProvider client={graphqlClient}>
+                <ThemeProvider theme={theme}>
+                    <GlobalStyle /> 
+                    <Router />
+                </ThemeProvider>
+            </ApolloHooksProvider>
+        </Provider>
+    </BrowserRouter>, 
     document.getElementById("app")
 );

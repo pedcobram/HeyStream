@@ -63,36 +63,42 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
     pushChangeToLogin();
   });
 
+  const style = {
+    width: "15rem"
+  }
+
   return (
-    <form onSubmit={onSubmit}>
-      <Label>
-        <LabelText>Email</LabelText>
-        <TextInput disabled={isSubmitting} name="email" type="email" ref={register} />
-      </Label>
-      <Label>
-        <LabelText>Password</LabelText>
-        <TextInput disabled={isSubmitting} name="password" type="password" ref={register} />
-      </Label>
-      <Label>
-        <LabelText>Confirm Password</LabelText>
-        <TextInput disabled={isSubmitting} name="confirmPassword" type="password" ref={register} />
-      </Label>
-      <SignUpButton disabled={isSubmitting || !isValid} type="submit">
-        Sign Up
-      </SignUpButton>{" "}
-      <OrSignUp>
-        or{" "}
-        <a
-          href="#"
-          onClick={evt => {
-            evt.preventDefault();
-            pushChangeToLogin();
-          }}
-        >
-          Login
-        </a>
-      </OrSignUp>
-    </form>
+    <div style={style}>
+      <form onSubmit={onSubmit}>
+        <Label>
+          <LabelText className="input-group-text">Email</LabelText>
+          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />
+        </Label>
+        <Label>
+          <LabelText className="input-group-text">Password</LabelText>
+          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="password" type="password" ref={register} />
+        </Label>
+        <Label>
+          <LabelText className="input-group-text">Confirm Password</LabelText>
+          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="confirmPassword" type="password" ref={register} />
+        </Label>
+        <SignUpButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit">
+          Sign Up
+        </SignUpButton>{" "}
+        <OrSignUp>
+          or{" "}
+          <a className="btn btn-secondary"
+            href="#"
+            onClick={evt => {
+              evt.preventDefault();
+              pushChangeToLogin();
+            }}
+          >
+            Login
+          </a>
+        </OrSignUp>
+      </form>
+    </div>
   );
 };
 

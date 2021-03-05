@@ -12,7 +12,7 @@ const Email = styled.div`
     margin-top: .25rem;
 `;
 
-const LogoutLink = styled.a.attrs({ href: "#"})`
+const LogoutButton = styled.button.attrs({ href: "#"})`
     color: blue;
     display: block;
     margin-top: .25rem;
@@ -35,14 +35,13 @@ const Account = () => {
     const session = useSelector(state => state.session);
 
     return (
-    <Wrapper>
-        Logged in as <Email>{session.user.email}</Email>
-        <LogoutLink onClick={evt => {
-            evt.preventDefault();
-            dispatch(clearSession());
-            deleteUserSession({ variables: { sessionId: session.id }});
-        }}>(Logout)</LogoutLink>
-    </Wrapper>
+        <Wrapper>
+            <LogoutButton className="btn btn-primary my-2 my-sm-0" onClick={evt => {
+                evt.preventDefault();
+                dispatch(clearSession());
+                deleteUserSession({ variables: { sessionId: session.id }});
+            }}>Logout</LogoutButton>
+        </Wrapper>
     );
 };
 

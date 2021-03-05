@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux"
-import styled from "styled-components"
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
 
 import graphqlClient from "#root/api/graphql/graphqlClient";
-import { setSession } from "#root/store/ducks/session";
+import { setSession, getSession } from "#root/store/ducks/session";
 
 import AccountDetails from "./AccountDetails";
 
@@ -58,21 +58,20 @@ const Root = () => {
     }, []);
 
     if(!initialised) return "Loading...";
-
+    
     return (
-    <Wrapper>
+    <Wrapper>       
         <Container>
-            <Content>
-                Hola :)
-            </Content>
-            <Sidebar>
-                <AccountDetails />
-            </Sidebar>
+                <NavBar />
+                <Content>
+                    Hola :)
+                </Content>
+                <Sidebar>
+                    <AccountDetails />
+                </Sidebar>
         </Container>
     </Wrapper>
     )
 };
-
-
 
 export default Root;

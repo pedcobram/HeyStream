@@ -5,6 +5,7 @@ import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import * as yup from "yup";
+import { MDBAlert } from 'mdbreact';
 
 import TextInput from "#root/components/shared/TextInput";
 
@@ -44,8 +45,6 @@ const validationSchema = yup.object().shape({
     .string()
     .required()
     .test("sameAsConfirmPassword", "${path} is not the same as the confirmation password", function(item) {
-      console.log(this.parent.password)
-      console.log("eyyy")
       return (this.parent.password === this.parent.confirmPassword)
       
     })
@@ -60,7 +59,7 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
     watch,
     errors
   } = useForm({ mode: "onChange", validationSchema });
-  const [createUser] = useMutation(mutation);
+  const [createUser, {data, error}] = useMutation(mutation);
 
   const onSubmit = handleSubmit(async ({ email, password }) => {
     await createUser({ variables: { email, password } });
@@ -69,18 +68,36 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
   });
 
   const style = {
-    width: "15rem"
+    width: "20rem"
   }
 
   const password = useRef({});
   password.current = watch("password", "");
 
+  if(error?.message.startsWith("GraphQL error: Validation error")) {
+    error.message = "GraphQL error: Email already in use "
+  }
+
+  const test = <h1>"Error"</h1>
+
   return (
     <div style={style}>
       <form onSubmit={onSubmit}>
         <Label>
-          <LabelText className="input-group-text">Email</LabelText>
-          <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />
+          {error?
+              <MDBAlert dismiss color="warning">
+                {error?.message.replace("GraphQL error: ", "")}
+              </MDBAlert>
+          :null}
+          {errors.confirmPassword?
+            <MDBAlert dismiss color="warning">
+              {errors.confirmPassword?.message}
+            </MDBAlert>
+          :null}
+        </Label>
+        <Label>
+        <LabelText className="input-group-text">Email</LabelText>
+        <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />
         </Label>
         <Label>
           <LabelText className="input-group-text">Password</LabelText>
@@ -89,11 +106,10 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
         <Label>
           <LabelText className="input-group-text">Confirm Password</LabelText>
           <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="confirmPassword" type="password" ref={register({
-            validate: value => value === password.current || "Passwords do not match"})} 
+            validate: value => value === password.current || "Passwords do not currently match"})}
           />
-          
-          {errors.confirmPassword.type}
         </Label>
+        
         <SignUpButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit" onSubmit={onSubmit}>
           Sign Up
         </SignUpButton>{" "}

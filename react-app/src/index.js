@@ -8,7 +8,6 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { BrowserRouter } from "react-router-dom";
 
 import graphqlClient from "#root/api/graphql/graphqlClient"
-import Root from "#root/components/Root"
 import store from "./store"
 import Router from "./Router"
 

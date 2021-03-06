@@ -8,17 +8,18 @@ const typeDefs = gql`
         id: ID!
     }
 
+    type Twitch {
+        id: ID!
+        user: User!
+        access_token: String!
+        refresh_token: String!
+    }
+
     type UserSession {
         createdAt: Date!
         expiresAt: Date!
         id: ID!
         user: User!
-        errors: [Error]!
-    }
-
-    type Error {
-        field: String!
-        messages: [String!]!
     }
 
     type Mutation {
@@ -30,6 +31,9 @@ const typeDefs = gql`
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
+        getTwitchUser(id: String!): Twitch!
+        getAllTwitchUsers: [Twitch!]!
+        getTwitchLinkAccount: Boolean!
     }
 `;
 

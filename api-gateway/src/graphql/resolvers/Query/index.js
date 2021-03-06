@@ -1,2 +1,5 @@
 export { default as userSession} from "./userSession"
 export { default as getUser } from "./getUser"
+export { default as getTwitchUser } from "./getTwitchUser"
+export { default as getAllTwitchUsers } from "./getAllTwitchUsers"
+export { default as getTwitchLinkAccount } from "./getTwitchLinkAccount"

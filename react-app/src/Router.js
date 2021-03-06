@@ -1,16 +1,23 @@
 import React from 'react';
-import { Route, Link } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
-import Root from "./components/Root/Root";
-import Test from "./Test";
+import Home from "./views/Home";
+import Account from "./views/Account";
+import Test from "./views/Test";
 
-function Home() {
+function Router() {
     return (
         <div>
-            <Route exact path="/" component={Root} />
+            <Route exact path="/" component={Home} />
+            <Route exact path="/account" component={Account} />
+            <Route exact path="/streams" component={Home} />
             <Route exact path="/test" component={Test}/>
+
+            <Switch>
+                <Route exact path="/streams/:id" children={<Home />} />
+            </Switch>
         </div>
     );
 };
 
-export default Home;
+export default Router;

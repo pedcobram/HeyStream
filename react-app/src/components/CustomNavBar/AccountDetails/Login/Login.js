@@ -1,12 +1,12 @@
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 
 import TextInput from "#root/components/shared/TextInput";
-import { useDispatch, useSelector} from "react-redux";
+import { useDispatch } from "react-redux";
 import { setSession } from "#root/store/ducks/session";
 
 import { MDBAlert } from 'mdbreact';
@@ -67,7 +67,7 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
     })
 
     const style = {
-        width: "15rem"
+        width: "20rem"
     }
 
     return (
@@ -88,7 +88,7 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
                     <LabelText className="input-group-text" >Password</LabelText>
                     <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="password" type="password" ref={register} />
                 </Label>
-                <LoginButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting} type="submit">Login</LoginButton>
+                <LoginButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting} type="submit" >Login</LoginButton>
                 {" "}
                 <OrSignUp>
                     or{" "}

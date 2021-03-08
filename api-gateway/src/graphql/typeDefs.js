@@ -26,6 +26,7 @@ const typeDefs = gql`
         createUser(email: String!, password: String!): User!
         createUserSession(email: String!, password: String!): UserSession!
         deleteUserSession(sessionId: ID!): Boolean!
+        twitchLanding(code: String!, userId: String!): Boolean!
     }
 
     type Query {
@@ -33,7 +34,7 @@ const typeDefs = gql`
         getUser(id: String!): User
         getTwitchUser(id: String!): Twitch!
         getAllTwitchUsers: [Twitch!]!
-        getTwitchLinkAccount: Boolean!
+        getTwitchLinkAccount: String!
     }
 `;
 

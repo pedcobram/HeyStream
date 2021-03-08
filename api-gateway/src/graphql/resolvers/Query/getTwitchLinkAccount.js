@@ -1,8 +1,8 @@
 import TwitchService from "#root/adapters/TwitchService";
 
 const getTwitchLinkAccount = async () => {
-    await TwitchService.TwitchLinkAccount();
-    return true;
+    const body = await TwitchService.TwitchLinkAccount();
+    return body.body;
 };
 
 export default getTwitchLinkAccount;

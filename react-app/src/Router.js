@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import Home from "./views/Home";
 import Account from "./views/Account";
 import Test from "./views/Test";
+import LandingTwitch from './views/LandingTwitch';
 
 function Router() {
     return (
@@ -11,6 +12,7 @@ function Router() {
             <Route exact path="/" component={Home} />
             <Route exact path="/account" component={Account} />
             <Route exact path="/streams" component={Home} />
+            <Route exact path="/twitch/landing" component={LandingTwitch} />
             <Route exact path="/test" component={Test}/>
 
             <Switch>

@@ -17,7 +17,7 @@ const setupRoutes = app => {
       const uri = 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + TWITCH_CLIENT_ID 
       + '&redirect_uri=' + REDIRECT_URI_LANDING 
       + '&state=' + TWITCH_CLIENT_SECRET
-      + 'scopes=user:edit';
+      + 'scopes=user_read';
 
       return res.json(uri)
 
@@ -25,24 +25,6 @@ const setupRoutes = app => {
       return next(e);
     }
   });
-
-  app.post("/users", async (req, res, next) => {
-    if (!req.body.email || !req.body.password) {
-      return next(new Error("Please fill in email and password!"));
-    }
-
-    try {
-      const newUser = await User.create({
-        email: req.body.email,
-        id: generateUUID(),
-        passwordHash: hashPassword(req.body.password)
-      });
-
-      return res.json(newUser);
-    } catch (e) {
-      return next(e);
-    }
-});
 
   app.post("/twitch/link", async (req, res, next) => {
     try {
@@ -62,7 +44,7 @@ const setupRoutes = app => {
 
       const data = JSON.parse(response.body);
 
-      await Twitch.create({
+      const created = await Twitch.create({
         id: generateUUID(),
         access_token: data.access_token,
         refresh_token: data.refresh_token,
@@ -70,7 +52,8 @@ const setupRoutes = app => {
       })
 
       return res.json({
-        message: "Everything went Ok !"
+        message: "Everything went Ok !",
+        body: created
       });
     } catch (e) {
       return next(e);
@@ -91,12 +74,24 @@ const setupRoutes = app => {
   app.get("/twitch/:userId", async (req, res, next) => {
     try {
       
-      const yt = await Twitch.findOne({ attributes: {}, where: {
-        id: req.params.userId}});
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.params.userId}});
 
-      if (!yt) return await next(new Error("No data for this user ID!"));
+      return res.json(twitchUser);
+    } catch (e) {
+      return next(e);
+    }
+  });
 
-      return res.json(yt);
+  app.delete("/twitch/:userId", async (req, res, next) => {
+    try {
+      
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.params.userId}});
+
+      await twitchUser.destroy();
+
+      return res.end();
     } catch (e) {
       return next(e);
     }

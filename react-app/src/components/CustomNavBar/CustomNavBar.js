@@ -52,7 +52,7 @@ const CustomNavBar = () => {
             <>
                 <Navbar bg="dark" variant="dark" expand="lg">
                     <Navbar.Brand href="/">App</Navbar.Brand>
-                    <Nav className="ml-auto">
+                    <Nav className="ml-auto" style={{ flexDirection: "row" }} >
                         <Nav.Item style={style}> 
                             <NavDropdown title={session.user.email} id="collasible-nav-dropdown">
                                 <NavDropdown.Item href="/account">Account</NavDropdown.Item>

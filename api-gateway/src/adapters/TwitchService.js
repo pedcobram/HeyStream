@@ -24,8 +24,13 @@ export default class TwitchService {
         return body;
     }
 
-    static async fetchTwitchUser({ id }) {
-        const body = await got.get(`${TWITCH_SERVICE_URI}/twitch/${id}`).json();
+    static async fetchTwitchUserByUserId({ userId }) {
+        const body = await got.get(`${TWITCH_SERVICE_URI}/twitch/${userId}`).json();
+        return body;
+    }
+
+    static async deleteTwitchSession({ userId }){
+        const body = await got.delete(`${TWITCH_SERVICE_URI}/twitch/${userId}`).json();
         return body;
     }
 

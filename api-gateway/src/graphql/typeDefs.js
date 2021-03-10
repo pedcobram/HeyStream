@@ -10,7 +10,7 @@ const typeDefs = gql`
 
     type Twitch {
         id: ID!
-        user: User!
+        userId: User!
         access_token: String!
         refresh_token: String!
     }
@@ -27,12 +27,13 @@ const typeDefs = gql`
         createUserSession(email: String!, password: String!): UserSession!
         deleteUserSession(sessionId: ID!): Boolean!
         twitchLanding(code: String!, userId: String!): Boolean!
+        deleteTwitchSession(userId: String!): Boolean!
     }
 
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
-        getTwitchUser(id: String!): Twitch!
+        getTwitchUser(userId: String!): Twitch
         getAllTwitchUsers: [Twitch!]!
         getTwitchLinkAccount: String!
     }

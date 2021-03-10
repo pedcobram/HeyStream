@@ -1,9 +1,19 @@
 import UsersService from "#root/adapters/UsersService";
+import TwitchService from "#root/adapters/TwitchService";
 
 const createUserSessionResolver = async (obj, { email, password }, context) => {
   const userSession = await UsersService.createUserSession({ email, password });
 
-  context.res.cookie("userSessionId", userSession.id, { httpOnly: true });
+  const userId = userSession.userId
+
+  context.res.cookie("userSessionId", userSession.id, { httpOnly: false });
+  context.res.cookie("userId", userId, { httpOnly: false });
+
+  const twitchSession = await TwitchService.fetchTwitchUserByUserId({ userId })
+
+  if (twitchSession != null) {
+    context.res.cookie("twitchAccessToken", twitchSession.access_token, { httpOnly: false });
+  }  
 
   return userSession;
 };

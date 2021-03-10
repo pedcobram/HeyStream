@@ -1,7 +1,7 @@
 import TwitchService from "#root/adapters/TwitchService";
 
-const getTwitchUser = async (obj, { id }, context) => {
-    return await TwitchService.fetchTwitchUser({id});
+const getTwitchUser = async (obj, { userId }, context) => {
+    return await TwitchService.fetchTwitchUserByUserId({ userId });
 };
 
 export default getTwitchUser; 

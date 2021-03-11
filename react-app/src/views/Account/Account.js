@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-/* import gql from "graphql-tag"; */
 import { useQuery, gql, useMutation } from "@apollo/client"
-/* import  { useMutation } from "@apollo/react-hooks"; */
 import styled from "styled-components";
+import { useParams } from "react-router-dom"
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import graphqlClient from "#root/api/graphql/graphqlClient";
@@ -11,12 +10,6 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
-const Label = styled.label`
-  display: block;
-  :not(:first-child) {
-    margin-top: 0.75rem;
-  }
-`;
 
 const Wrapper = styled.div`
     color: ${props => props.theme.mortar};
@@ -37,9 +30,29 @@ const query2 = gql`
     }
 `;
 
+const query3 = gql`
+    query {
+        getYoutubeLinkAccount
+    }
+`;
+
+const query4 = gql`
+    query($userId: String!) {
+        getYoutubeUser(userId: $userId) {
+            access_token
+        }
+    }
+`;
+
 const mutation = gql`
     mutation($userId: String!) {
         deleteTwitchSession(userId: $userId)
+    }
+`;
+
+const mutation2 = gql`
+    mutation($userId: String!) {
+        deleteYoutubeSession(userId: $userId)
     }
 `;
 
@@ -61,9 +74,24 @@ function getCookie(name) {
 
 const Account = () => {
 
-    const [deleteTwitchSession] = useMutation(mutation);
-
     const [twitchLink, setTwitchLink] = useState(String);
+
+    const [deleteTwitchSession] = useMutation(mutation);
+    const [deleteYoutubeSession] = useMutation(mutation2);
+
+    const { data } = useQuery(query2, {
+        variables: { 
+        "userId": getCookie("userId")
+        }
+    })
+
+    const { data: youtubeLink } = useQuery(query3);
+    
+    const { data: youtubeUser } = useQuery(query4, {
+        variables: { 
+        "userId": getCookie("userId")
+        }
+    })
 
     useEffect(() => {
         graphqlClient.query({ query }).then(({ data }) => {
@@ -71,18 +99,14 @@ const Account = () => {
                 setTwitchLink(data.getTwitchLinkAccount)
             }
         })
-    }, []);  
+    }, []); 
 
-    const { data } = useQuery(query2, {
-        variables: { 
-           "userId": getCookie("userId")
-        }
-    })
+    const {id} = useParams();
 
     return (
         <Wrapper>
             <CustomNavBar/>
-
+            {id}
             <Container fluid >
                 <Row style={rowStyle}>
                     <Col md={{ span: 0, offset: 8 }}>
@@ -107,6 +131,26 @@ const Account = () => {
                     <Row style={rowStyle}>
                         <Col md={{ span: 0, offset: 8 }}>
                             <a className="btn btn-dark" href={twitchLink.replace('\"', '').slice(0, -1)}> Link Twitch Account</a>   
+                        </Col>
+                    </Row>
+                }
+                {youtubeUser?.getYoutubeUser ?
+                    <Row style={rowStyle}>
+                        <Col md={{ span: 0, offset: 8 }}>
+                            <a className="btn btn-dark" href={youtubeLink?.getYoutubeLinkAccount.replace('\"', '').slice(0, -1)} onClick={evt => {
+                            evt.preventDefault();
+                            deleteYoutubeSession({ variables: { userId: getCookie("userId") }});
+                            setInterval(() => {
+                                window.location.reload();
+                            }, 100); 
+                        }}> Unlink Youtube Account</a>   
+                        </Col>
+                    </Row>
+                    
+                :
+                    <Row style={rowStyle}>
+                        <Col md={{ span: 0, offset: 8 }}>
+                            <a className="btn btn-dark" href={youtubeLink?.getYoutubeLinkAccount.replace('\"', '').slice(0, -1)}> Link Youtube Account</a>   
                         </Col>
                     </Row>
                 }

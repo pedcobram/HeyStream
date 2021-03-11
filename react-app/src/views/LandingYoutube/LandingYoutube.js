@@ -4,9 +4,7 @@ import styled from "styled-components";
 import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
-
-import { setTwitchSession } from "#root/store/ducks/twitchSession"
+import { useSelector } from "react-redux";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import TextInput from "#root/components/shared/TextInput";
@@ -19,15 +17,14 @@ const Wrapper = styled.div`
 
 const mutation = gql`
     mutation($code: String!, $userId: String!) {
-        twitchLanding(code: $code, userId: $userId) 
+        youtubeLanding(code: $code, userId: $userId) 
     }
 `;
 
-const LandingTwitch = () => {
+const LandingYoutube = () => {
 
     const loadingGif = require('../../images/loadingIcon.gif');
 
-    const dispatch = useDispatch();
     const history = useHistory();
 
     const session = useSelector(state => state.session);
@@ -35,9 +32,9 @@ const LandingTwitch = () => {
     
 
     const urlParams = new URLSearchParams(window.location.search);
-    const twitchCode = urlParams.get('code');
+    const youtubeCode = urlParams.get('code');
 
-    const [twitchLanding, {data, error}] = useMutation(mutation);   
+    const [youtubeLanding] = useMutation(mutation);   
 
     const {
         formState: { isSubmitting },
@@ -45,27 +42,30 @@ const LandingTwitch = () => {
         register
     } = useForm(); 
 
-    const onSubmit = handleSubmit(async ({ code, userId }) => {   
-        await twitchLanding({ 
-            variables: { 
-               code,
-               userId
-            } 
-        })
-        dispatch(setTwitchSession(true));
-        history.push("/account");
+    const onSubmit = handleSubmit(async ({ code, userId }) => { 
+        try {
+            await youtubeLanding({ 
+                variables: { 
+                   code,
+                   userId
+                } 
+            })
+            history.push("/account");
+        }  catch(e) {
+            console.log(e)
+            history.push(`/account/{e}`);
+        }
+        
     })
-
+    /*
     setInterval(() => {
         document.getElementById("landing")?.click();
     }, 1000);
-
+    */
     return (
         <Wrapper>
             <CustomNavBar/>
-            
             <div  >
-                
                 <h2 style={{   position: "fixed",
                             top: "42%",
                             left: "50%",
@@ -78,9 +78,9 @@ const LandingTwitch = () => {
                 }} src={ loadingGif } width="100" height="100" />  
                 <div className="form-row form-row-end">
                         <form onSubmit={onSubmit}>
-                            <TextInput  className="form-control mr-sm-2" disabled={false} name="code" type="hidden" defaultValue={twitchCode} ref={register} />
+                            <TextInput  className="form-control mr-sm-2" disabled={false} name="code" type="hidden" defaultValue={youtubeCode} ref={register} />
                             <TextInput className="form-control mr-sm-2" disabled={false} name="userId" type="hidden" defaultValue={sessionUserId} ref={register} />
-                            <button style={{display:"none"}} className="btn btn-primary my-2 my-sm-0" id="landing" disabled={isSubmitting} type="submit">Continue</button>
+                            <button  className="btn btn-primary my-2 my-sm-0" id="landing" disabled={isSubmitting} type="submit">Continue</button>
                         </form>
                 </div>
             </div>
@@ -89,4 +89,4 @@ const LandingTwitch = () => {
     );
 }
 
-export default LandingTwitch;
+export default LandingYoutube;

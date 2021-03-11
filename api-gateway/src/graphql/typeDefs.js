@@ -15,6 +15,13 @@ const typeDefs = gql`
         refresh_token: String!
     }
 
+    type Youtube {
+        id: ID!
+        userId: User!
+        access_token: String!
+        refresh_token: String!
+    }
+
     type UserSession {
         createdAt: Date!
         expiresAt: Date!
@@ -28,6 +35,8 @@ const typeDefs = gql`
         deleteUserSession(sessionId: ID!): Boolean!
         twitchLanding(code: String!, userId: String!): Boolean!
         deleteTwitchSession(userId: String!): Boolean!
+        youtubeLanding(code: String!, userId: String!): Boolean!
+        deleteYoutubeSession(userId: String!): Boolean!
     }
 
     type Query {
@@ -36,6 +45,8 @@ const typeDefs = gql`
         getTwitchUser(userId: String!): Twitch
         getAllTwitchUsers: [Twitch!]!
         getTwitchLinkAccount: String!
+        getYoutubeLinkAccount: String!
+        getYoutubeUser(userId: String!): Youtube
     }
 `;
 

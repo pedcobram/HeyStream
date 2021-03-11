@@ -6,6 +6,7 @@ const deleteUserSessionResolver = async (obj, { sessionId }, context) => {
   context.res.clearCookie("userSessionId");
   context.res.clearCookie("userId");
   context.res.clearCookie("twitchAccessToken");
+  context.res.clearCookie("youtubeAccessToken");
 
   return true;
 };

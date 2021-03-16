@@ -43,7 +43,7 @@ const LandingYoutube = () => {
     } = useForm(); 
 
     const onSubmit = handleSubmit(async ({ code, userId }) => { 
-        try {
+        
             await youtubeLanding({ 
                 variables: { 
                    code,
@@ -51,17 +51,14 @@ const LandingYoutube = () => {
                 } 
             })
             history.push("/account");
-        }  catch(e) {
-            console.log(e)
-            history.push(`/account/{e}`);
-        }
+        
         
     })
-    /*
+
     setInterval(() => {
         document.getElementById("landing")?.click();
     }, 1000);
-    */
+
     return (
         <Wrapper>
             <CustomNavBar/>
@@ -84,7 +81,6 @@ const LandingYoutube = () => {
                         </form>
                 </div>
             </div>
-            
         </Wrapper>
     );
 }

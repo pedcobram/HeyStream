@@ -79,7 +79,7 @@ const Account = () => {
     const [deleteTwitchSession] = useMutation(mutation);
     const [deleteYoutubeSession] = useMutation(mutation2);
 
-    const { data } = useQuery(query2, {
+    const { data, refetch: refetchTwitchUser } = useQuery(query2, {
         variables: { 
         "userId": getCookie("userId")
         }
@@ -87,7 +87,7 @@ const Account = () => {
 
     const { data: youtubeLink } = useQuery(query3);
     
-    const { data: youtubeUser } = useQuery(query4, {
+    const { data: youtubeUser, refetch: refetchYoutubeUser } = useQuery(query4, { 
         variables: { 
         "userId": getCookie("userId")
         }
@@ -101,6 +101,7 @@ const Account = () => {
         })
     }, []); 
 
+    console.log(data?.getTwitchUser)
     const {id} = useParams();
 
     return (
@@ -119,9 +120,7 @@ const Account = () => {
                         <a className="btn btn-dark" href={twitchLink.replace('\"', '').slice(0, -1)} onClick={evt => {
                             evt.preventDefault();
                             deleteTwitchSession({ variables: { userId: getCookie("userId") }});
-                            setInterval(() => {
-                                window.location.reload();
-                            }, 100); 
+                            refetchTwitchUser();
                         }}> 
                             Unlink Twitch Account
                         </a>   
@@ -140,9 +139,7 @@ const Account = () => {
                             <a className="btn btn-dark" href={youtubeLink?.getYoutubeLinkAccount.replace('\"', '').slice(0, -1)} onClick={evt => {
                             evt.preventDefault();
                             deleteYoutubeSession({ variables: { userId: getCookie("userId") }});
-                            setInterval(() => {
-                                window.location.reload();
-                            }, 100); 
+                            refetchYoutubeUser(); 
                         }}> Unlink Youtube Account</a>   
                         </Col>
                     </Row>

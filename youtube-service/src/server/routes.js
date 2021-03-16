@@ -36,19 +36,6 @@ const setupRoutes = app => {
         return next(new Error("Incorrect parameters !!"))
       }
 
-      var httpHeaders = {
-        'Host': 'accounts.google.com',
-        'user-key': 'application/x-www-form-urlencoded'
-      }
-
-      const postData = {
-        code: req.body.code,
-        client_id: YOUTUBE_CLIENT_ID,
-        client_secret: YOUTUBE_CLIENT_SECRET,
-        redirect_uri: REDIRECT_URI_LANDING,
-        grant_type: "authorization_code"
-      }
-
       const response = await got.post('https://accounts.google.com/o/oauth2/token', {
         headers: {
           Host: 'accounts.google.com',
@@ -74,6 +61,8 @@ const setupRoutes = app => {
         refresh_token: data.refresh_token,
         userId: JSON.parse(user.body).userId
       })
+
+      console.log(created)
 
       return res.json({
         message: "Everything went Ok !",

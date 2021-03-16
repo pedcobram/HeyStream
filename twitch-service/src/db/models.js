@@ -80,7 +80,7 @@ YouTube.init(
             unique: true
         },
         refresh_token: {
-            allowNull: false,
+            allowNull: true,
             type: DataTypes.STRING,
             unique: true
         }
@@ -117,7 +117,7 @@ Twitch.init(
             unique: true
         },
         refresh_token: {
-            allowNull: false,
+            allowNull: true,
             type: DataTypes.STRING,
             unique: true
         }

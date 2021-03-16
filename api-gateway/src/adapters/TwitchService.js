@@ -29,6 +29,11 @@ export default class TwitchService {
         return body;
     }
 
+    static async getTwitchVideosNoLogin() {
+        const body = await got.get(`${TWITCH_SERVICE_URI}/twitch/videos`).json();
+        return body;
+    }
+
     static async deleteTwitchSession({ userId }){
         const body = await got.delete(`${TWITCH_SERVICE_URI}/twitch/${userId}`).json();
         return body;

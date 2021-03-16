@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
+import TwitchVideosNoLogin from "#root/components/TwitchVideosNoLogin/TwitchVideosNoLogin";
 
 
 const Label = styled.label`
@@ -21,9 +22,7 @@ const Home = () => {
     return (
         <Wrapper>
             <CustomNavBar/>
-            <div>
-                Hola :)
-            </div>
+            <TwitchVideosNoLogin/>
         </Wrapper>
     );
 }

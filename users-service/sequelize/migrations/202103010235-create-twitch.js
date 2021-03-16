@@ -21,7 +21,7 @@ module.exports.up = (queryInterface, DataTypes) => {
                 unique: true
             },
             refresh_token: {
-                allowNull: false,
+                allowNull: true,
                 type: DataTypes.STRING,
                 unique: true
             }

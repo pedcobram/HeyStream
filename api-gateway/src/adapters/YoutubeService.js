@@ -6,6 +6,7 @@ export default class YoutubeService {
 
     static async YoutubeLinkAccount() {
         const body = await got.get(`${YOUTUBE_SERVICE_URI}/youtube/link`);
+        console.log(body.body)
         return body;
     }
 

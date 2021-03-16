@@ -1,4 +1,4 @@
-import { Twitch } from "#root/db/models";
+import { Twitch, User } from "#root/db/models";
 import got from "got";
 
 import accessEnv from "#root/helpers/accessEnv"
@@ -21,6 +21,101 @@ const setupRoutes = app => {
 
       return res.json(uri)
 
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.get("/twitch", async (req, res, next) => {
+    try {
+
+      const twitchUsers = await Twitch.findAll();
+      return res.json(twitchUsers)
+
+    } catch (e) {
+      return next(e);
+    }
+  })
+
+  app.get("/twitch/videos", async (req, res, next) => {
+    try {
+      
+      const twitchAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const twitchSession = await Twitch.findOne({ attributes: {}, where: {
+        userId: twitchAdmin.dataValues.id}});
+
+      var httpheaders = {
+        Authorization: 'Bearer ' + twitchSession.dataValues.access_token,
+        ClientId: TWITCH_CLIENT_ID
+      }
+
+      const response = await got.get('https://api.twitch.tv/helix/streams?first=25', {
+        headers: {
+          'Authorization': 'Bearer ' + twitchSession.dataValues.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }});  
+
+      return res.json(JSON.parse(response.body));
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.get("/twitch/:userId", async (req, res, next) => {
+    try {
+      
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.params.userId}});
+
+      return res.json(twitchUser);
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  
+  app.post("/twitch/appToken", async (req, res, next) => {
+    try {
+
+      const response = await got.post('https://id.twitch.tv/oauth2/token'
+      + '?client_id=' + TWITCH_CLIENT_ID 
+      + '&client_secret=' + TWITCH_CLIENT_SECRET 
+      + '&grant_type=client_credentials');
+
+      const data = JSON.parse(response.body);
+
+      const twitchAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const twitchSession = await Twitch.findOne({ attributes: {}, where: {
+        userId: twitchAdmin.dataValues.id}});
+
+      if (twitchSession) {
+        await Twitch.update(
+          {
+            access_token: data.access_token,
+            refresh_token: null       
+          },
+          {
+            where: {
+              userId: twitchAdmin.dataValues.id
+            }
+          }
+        )
+      } else {
+          await Twitch.create({
+          userId: twitchAdmin.dataValues.id,
+          id: generateUUID(),
+          access_token: data.access_token,
+          refresh_token: null        
+        })
+      }
+
+      return res.json({
+        message: "Everything went Ok !"
+      });
     } catch (e) {
       return next(e);
     }
@@ -55,29 +150,6 @@ const setupRoutes = app => {
         message: "Everything went Ok !",
         body: created
       });
-    } catch (e) {
-      return next(e);
-    }
-  });
-
-  app.get("/twitch", async (req, res, next) => {
-    try {
-
-      const twitchUsers = await Twitch.findAll();
-      return res.json(twitchUsers)
-
-    } catch (e) {
-      return next(e);
-    }
-  })
-  
-  app.get("/twitch/:userId", async (req, res, next) => {
-    try {
-      
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.params.userId}});
-
-      return res.json(twitchUser);
     } catch (e) {
       return next(e);
     }

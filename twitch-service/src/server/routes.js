@@ -46,12 +46,7 @@ const setupRoutes = app => {
       const twitchSession = await Twitch.findOne({ attributes: {}, where: {
         userId: twitchAdmin.dataValues.id}});
 
-      var httpheaders = {
-        Authorization: 'Bearer ' + twitchSession.dataValues.access_token,
-        ClientId: TWITCH_CLIENT_ID
-      }
-
-      const response = await got.get('https://api.twitch.tv/helix/streams?first=25', {
+      const response = await got.get('https://api.twitch.tv/helix/streams?first=10', {
         headers: {
           'Authorization': 'Bearer ' + twitchSession.dataValues.access_token,
           'Client-Id': TWITCH_CLIENT_ID
@@ -63,19 +58,8 @@ const setupRoutes = app => {
     }
   });
 
-  app.get("/twitch/:userId", async (req, res, next) => {
-    try {
-      
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.params.userId}});
-
-      return res.json(twitchUser);
-    } catch (e) {
-      return next(e);
-    }
-  });
-
   
+
   app.post("/twitch/appToken", async (req, res, next) => {
     try {
 
@@ -150,6 +134,18 @@ const setupRoutes = app => {
         message: "Everything went Ok !",
         body: created
       });
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.get("/twitch/:userId", async (req, res, next) => {
+    try {
+      
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.params.userId}});
+
+      return res.json(twitchUser);
     } catch (e) {
       return next(e);
     }

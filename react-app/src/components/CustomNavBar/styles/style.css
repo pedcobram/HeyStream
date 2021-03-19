@@ -1,0 +1,76 @@
+:root {
+    --silver: #bdbdbd;
+    --greyish-blue: #32393d;
+    --midtone-grey: #373737;
+    --dark-grey: #2d2d2d;
+    --grey: #464646;
+}
+
+.dropdown-menu  {
+    background-color: var(--dark-grey);
+    border: none;
+    color: var(--silver)
+}
+
+.nav-item .dropdown {
+    background-color: var(--dark-grey);
+    border: none;
+    color: var(--silver)
+}
+
+#collasible-nav-dropdown {
+    background-color: var(--dark-grey);
+    margin-right: 1rem;
+    border: none;
+    color: var(--silver)
+}
+
+#navItem {
+    color: var(--silver);
+}
+
+#navItem:hover {
+    background-color: var(--grey);
+}
+
+#navbar {
+    background-color: var(--dark-grey);
+}
+
+#logo {
+    color: var(--silver);
+}
+
+#nav {
+    flex-direction: "row";
+}
+
+#loginForm {
+    background-color: var(--dark-grey);
+    padding: 0.25rem;
+}
+
+#loginButton {
+    background-color: var(--grey);
+    border: none;
+}
+
+#signupButton {
+    background-color: var(--grey);
+    border: none;
+}
+
+#labelText {
+    background: var(--dark-grey);
+    color: var(--silver);
+    border: none; 
+}
+
+#signupForm {
+    background-color: var(--dark-grey);
+    padding: 0.25rem;
+}
+
+#orSignUpButton {
+    color: var(--silver);
+}

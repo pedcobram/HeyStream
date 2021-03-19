@@ -61,11 +61,9 @@ const LandingTwitch = () => {
     }, 1000);
 
     return (
-        <Wrapper>
+        <div>
             <CustomNavBar/>
-            
             <div  >
-                
                 <h2 style={{   position: "fixed",
                             top: "42%",
                             left: "50%",
@@ -84,8 +82,7 @@ const LandingTwitch = () => {
                         </form>
                 </div>
             </div>
-            
-        </Wrapper>
+        </div>
     );
 }
 

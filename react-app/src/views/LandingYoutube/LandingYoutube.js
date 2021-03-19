@@ -9,11 +9,6 @@ import { useSelector } from "react-redux";
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import TextInput from "#root/components/shared/TextInput";
 
-const Wrapper = styled.div`
-    color: ${props => props.theme.mortar};
-    font-size: 0.9rem;
-    width: 100%
-`;
 
 const mutation = gql`
     mutation($code: String!, $userId: String!) {
@@ -60,7 +55,7 @@ const LandingYoutube = () => {
     }, 1000);
 
     return (
-        <Wrapper>
+        <div>
             <CustomNavBar/>
             <div  >
                 <h2 style={{   position: "fixed",
@@ -81,7 +76,7 @@ const LandingYoutube = () => {
                         </form>
                 </div>
             </div>
-        </Wrapper>
+        </div>
     );
 }
 

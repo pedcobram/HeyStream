@@ -14,6 +14,7 @@ import DropdownButton from "react-bootstrap/DropdownButton"
 import NavDropdown from "react-bootstrap/NavDropdown"
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles/style.css"
 
 const query = gql`
     {
@@ -28,10 +29,6 @@ const query = gql`
 `;
 
 const CustomNavBar = () => {
-
-    const style = {
-        paddingRight: '0.25rem'
-    };
 
     const dispatch = useDispatch();
     const [initialised, setInitialised] = useState(false);
@@ -50,15 +47,15 @@ const CustomNavBar = () => {
     if (session) {
         return (
             <>
-                <Navbar bg="dark" variant="dark" expand="lg">
-                    <Navbar.Brand href="/">App</Navbar.Brand>
-                    <Nav className="ml-auto" style={{ flexDirection: "row" }} >
-                        <Nav.Item style={style}> 
+                <Navbar id="navbar" expand="lg">
+                    <Navbar.Brand id="logo" href="/">HeyStream</Navbar.Brand>
+                    <Nav className="ml-auto" id="nav" >
+                        <Nav.Item > 
                             <NavDropdown title={session.user.email} id="collasible-nav-dropdown">
-                                <NavDropdown.Item href="/account">Account</NavDropdown.Item>
+                                <NavDropdown.Item id="navItem" href="/account">Account</NavDropdown.Item>
                             </NavDropdown>
                         </Nav.Item>
-                        <Nav.Item style={style}> <Account /> </Nav.Item>
+                        <Nav.Item id="item"> <Account /> </Nav.Item>
                     </Nav>
                 </Navbar>
                 <br />
@@ -70,11 +67,11 @@ const CustomNavBar = () => {
 
     return (
         <>
-            <Navbar bg="dark" variant="dark">
-                <Navbar.Brand href="#home">App</Navbar.Brand>
-                <Nav className="ml-auto">
-                    <Nav.Item style={style}>
-                        <DropdownButton title="Cuenta" key="left" id="dropdown-button-drop-left" drop="left">
+            <Navbar id="navbar" expand="lg">
+                <Navbar.Brand id="logo" href="/">HeyStream</Navbar.Brand>
+                <Nav className="ml-auto" id="nav">
+                    <Nav.Item>
+                        <DropdownButton title="Account" key="left" id="dropdown-button-drop-left" drop="left">
                             <AccountDetails />
                         </DropdownButton>
                     </Nav.Item>

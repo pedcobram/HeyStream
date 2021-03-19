@@ -12,6 +12,7 @@ import { setSession } from "#root/store/ducks/session";
 import { MDBAlert } from 'mdbreact';
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/style.css"
 
 const Label = styled.label`
     display: block;
@@ -21,6 +22,7 @@ const LabelText = styled.strong`
     display: block;
     font-size: 0.9rem;
     margin-bottom: 0.25rem;
+    border: none;
 `;
 
 const LoginButton = styled.button`
@@ -30,6 +32,7 @@ const LoginButton = styled.button`
 
 const OrSignUp = styled.span`
     font-size: 0.9rem;
+    color: rgb(189,189,189);
 `;
 
 const mutation = gql`
@@ -72,7 +75,7 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
 
     return (
         <div style={style}> 
-            <form className="" onSubmit = { onSubmit }>
+            <form id="loginForm" onSubmit = { onSubmit }>
                 <Label>
                     {error?
                         <MDBAlert dismiss color="warning">
@@ -81,18 +84,18 @@ const Login = ({ onChangeToSignUp: pushChangeToSignUp}) => {
                     :null}
                 </Label>
                 <Label>
-                    <LabelText className="input-group-text">Email</LabelText>
-                    <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />
+                    <LabelText id="labelText" className="input-group-text">Email</LabelText>
+                    <TextInput  className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="text" ref={register} />
                 </Label>
                 <Label>
-                    <LabelText className="input-group-text" >Password</LabelText>
+                    <LabelText id="labelText" className="input-group-text" >Password</LabelText>
                     <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="password" type="password" ref={register} />
                 </Label>
-                <LoginButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting} type="submit" >Login</LoginButton>
+                <LoginButton id="loginButton"  className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting} type="submit" >Login</LoginButton>
                 {" "}
-                <OrSignUp>
+                <OrSignUp id="orSignUpButton">
                     or{" "}
-                    <a className="btn btn-secondary"
+                    <a id="signupButton" className="btn btn-secondary"
                         href="#" onClick={evt => {
                             evt.preventDefault();
                             pushChangeToSignUp();

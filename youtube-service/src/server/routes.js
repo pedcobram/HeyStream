@@ -62,8 +62,6 @@ const setupRoutes = app => {
         userId: JSON.parse(user.body).userId
       })
 
-      console.log(created)
-
       return res.json({
         message: "Everything went Ok !",
         body: created

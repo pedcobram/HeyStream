@@ -6,7 +6,7 @@ const TextInput = styled.input`
     display: block;
     font-size: 0.9rem;
     padding: 0.25rem;
-    width: 100%;
+    width: 100%;    
 `;
 
 export default TextInput;

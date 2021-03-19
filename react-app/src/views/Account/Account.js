@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client"
 import styled from "styled-components";
-import { useParams } from "react-router-dom"
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import graphqlClient from "#root/api/graphql/graphqlClient";
@@ -9,12 +8,6 @@ import graphqlClient from "#root/api/graphql/graphqlClient";
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-
-
-const Wrapper = styled.div`
-    color: ${props => props.theme.mortar};
-    font-size: 0.9rem;
-`;
 
 const query = gql`
     query {
@@ -61,6 +54,10 @@ const rowStyle = {
     marginBottom: "4rem",
 };
 
+const Title = styled.h2`
+    color: var(--silver)
+`;
+
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -101,17 +98,13 @@ const Account = () => {
         })
     }, []); 
 
-    console.log(data?.getTwitchUser)
-    const {id} = useParams();
-
     return (
-        <Wrapper>
+        <div>
             <CustomNavBar/>
-            {id}
             <Container fluid >
                 <Row style={rowStyle}>
                     <Col md={{ span: 0, offset: 8 }}>
-                        <h2>Link Accounts</h2>
+                        <Title>Link Accounts</Title>
                     </Col>
                 </Row>
                 {data?.getTwitchUser ?
@@ -152,7 +145,7 @@ const Account = () => {
                     </Row>
                 }
             </Container>
-        </Wrapper>
+        </div>
     );
 }
 

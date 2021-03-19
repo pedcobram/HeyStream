@@ -1,8 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { useQuery, gql, useMutation } from "@apollo/client"
-import graphqlClient from "#root/api/graphql/graphqlClient";
+import React, { useState } from "react";
+import { useQuery, gql } from "@apollo/client"
+import styled from "styled-components";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+const Container = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 4rem;
+    margin-top: 1rem;    
+`;
+
+const Video = styled.div`
+    height: 240px;
+    width: 320px;
+    margin-top: 1rem;
+`;
+
+const Text = styled.div`
+    font-size: 15px;
+    color: rgb(189,189,189);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+const SubText = styled.div`
+    font-size: 13px;
+    color: rgb(189,189,189);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+const Filters = styled.div`
+    display: flex;
+    justify-content: left;
+    width: 100%;
+    padding-left: 4rem;
+`;
+
+const Filter = styled.div`
+    padding-right: 1rem;
+`;
+
+const FilterText = styled.h3`
+    color: var(--silver);
+    padding-right: 1rem;
+`;
 
 const query = gql`
     {
@@ -23,18 +67,55 @@ const query = gql`
     }
 `;
 
-const TwitchVideosNoLogin = (props) => {
-    
-    const {data: videos, loading} = useQuery(query)
+const TwitchVideosNoLogin = ()  => {
 
-    if(loading) return "Cargando :P"
+    const [searchTerm, setSearchTerm] = useState('')
+
+    const {data: videos} = useQuery(query);
+
+    function updateState(searchTerm, param) {
+        if(searchTerm == param) {
+            setSearchTerm('')
+        } else {
+            setSearchTerm(param)
+        }
+    }
 
     return (
-        <>
-            {videos.getTwitchVideosNoLogin.map((item) => (
-                <li key={item.id}>{item.id}</li>
-            ))}
-        </>
+        <div>
+            <Filters>
+                <FilterText>Filters: </FilterText>
+                <Filter>
+                    <button className="btn btn-primary" onClick={() => {
+                        updateState(searchTerm, 'Twitch')
+                    }}>Twitch</button>
+                </Filter>
+                <Filter>
+                    <button className="btn btn-primary" onClick={() => {
+                        updateState(searchTerm, 'YouTube')
+                    }}>YouTube</button>
+                </Filter>
+            </Filters>
+            <Container>
+                {videos?.getTwitchVideosNoLogin.map(v => ({...v, platform: 'Twitch'})).filter((video) => {
+                    if(searchTerm == '') {
+                        return video
+                    } else if (video.platform.toLowerCase() == searchTerm.toLowerCase()) {
+                        return video
+                    }
+                }).map((video, idx) => (
+                    <Video key={idx}>
+                        <a href={"/twitch/{user}".replace('{user}', video.user_name)}>
+                            <img src={video.thumbnail_url.replace('{width}', 320).replace('{height}', 180)} />
+                        </a>
+                        <Text title={video.title}>{video.title}</Text>
+                        <SubText>{video.user_name}</SubText>
+                        <SubText>{video.game_name}</SubText>
+                    </Video>
+                ))}
+            </Container>
+        </div>
+
     )
 };
 

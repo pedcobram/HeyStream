@@ -9,6 +9,8 @@ import { MDBAlert } from 'mdbreact';
 
 import TextInput from "#root/components/shared/TextInput";
 
+import "../../styles/style.css"
+
 const Label = styled.label`
   display: block;
   :not(:first-child) {
@@ -78,11 +80,9 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
     error.message = "GraphQL error: Email already in use "
   }
 
-  const test = <h1>"Error"</h1>
-
   return (
     <div style={style}>
-      <form onSubmit={onSubmit}>
+      <form id="signupForm" onSubmit={onSubmit}>
         <Label>
           {error?
               <MDBAlert dismiss color="warning">
@@ -96,26 +96,26 @@ const SignUp = ({ onChangeToLogin: pushChangeToLogin }) => {
           :null}
         </Label>
         <Label>
-        <LabelText className="input-group-text">Email</LabelText>
+        <LabelText id="labelText" className="input-group-text">Email</LabelText>
         <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="email" type="email" ref={register} />
         </Label>
         <Label>
-          <LabelText className="input-group-text">Password</LabelText>
+          <LabelText id="labelText" className="input-group-text">Password</LabelText>
           <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="password" type="password" ref={register} />
         </Label>
         <Label>
-          <LabelText className="input-group-text">Confirm Password</LabelText>
+          <LabelText id="labelText" className="input-group-text">Confirm Password</LabelText>
           <TextInput className="form-control mr-sm-2" disabled={isSubmitting} name="confirmPassword" type="password" ref={register({
             validate: value => value === password.current || "Passwords do not currently match"})}
           />
         </Label>
         
-        <SignUpButton className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit" onSubmit={onSubmit}>
+        <SignUpButton id="loginButton" className="btn btn-primary my-2 my-sm-0" disabled={isSubmitting || !isValid} type="submit" onSubmit={onSubmit}>
           Sign Up
         </SignUpButton>{" "}
-        <OrSignUp>
+        <OrSignUp id="orSignUpButton">
           or{" "}
-          <a className="btn btn-secondary"
+          <a id="signupButton" className="btn btn-secondary"
             href="#"
             onClick={evt => {
               evt.preventDefault();

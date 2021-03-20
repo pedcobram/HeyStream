@@ -81,6 +81,16 @@ const TwitchVideosNoLogin = ()  => {
         }
     }
 
+    const capitalize = (s) => {
+        return s.charAt(0).toUpperCase() + s.slice(1)
+    }
+
+    function kFormatter(num) {
+        return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'k' : Math.sign(num)*Math.abs(num)
+    }
+
+    console.log(kFormatter(300178))
+
     return (
         <div>
             <Filters>
@@ -105,9 +115,21 @@ const TwitchVideosNoLogin = ()  => {
                     }
                 }).map((video, idx) => (
                     <Video key={idx}>
-                        <a href={"/twitch/{user}".replace('{user}', video.user_name)}>
-                            <img src={video.thumbnail_url.replace('{width}', 320).replace('{height}', 180)} />
-                        </a>
+                        <div className="container">
+                            <a href={"/twitch/{user}".replace('{user}', video.user_name)}>
+                                <img src={video.thumbnail_url.replace('{width}', 320).replace('{height}', 180)} />
+                            </a>
+                            <div className="bottom-right">
+                                <p className="live">
+                                    {capitalize(video.type)}
+                                </p>
+                            </div>
+                            <div className="bottom-left">
+                                <div className="viewers">
+                                    {kFormatter(video.viewer_count)} viewers
+                                </div>
+                            </div>
+                        </div>
                         <Text title={video.title}>{video.title}</Text>
                         <SubText>{video.user_name}</SubText>
                         <SubText>{video.game_name}</SubText>

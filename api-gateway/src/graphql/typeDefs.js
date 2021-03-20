@@ -45,6 +45,46 @@ const typeDefs = gql`
         tag_ids: [String!]!
     }
 
+    type PageInfo {
+        totalResults: String!
+        resultsPerPage: String!
+    }
+
+    type ytID {
+        videoId: String!
+    }
+
+    type Item {
+        id: ytID!
+        snippet: Snippet!
+    }   
+    
+    type Medium {
+        url: String!
+        width: String!
+        height: String!
+    }
+
+    type Thumbnail {
+        medium: Medium!
+    }
+
+    type Snippet {
+        publishedAt: Date!
+        channelId: String!
+        title: String!
+        description: String!
+        thumbnails: Thumbnail!
+        channelTitle: String!
+        liveBroadcastContent: String!
+    }
+
+    type YoutubeVideo {
+        nextPageToken: String!
+        items: [Item!]!
+        pageInfo: PageInfo!
+    }
+
     type Mutation {
         createUser(email: String!, password: String!): User!
         createUserSession(email: String!, password: String!): UserSession!
@@ -64,6 +104,7 @@ const typeDefs = gql`
         getYoutubeLinkAccount: String!
         getYoutubeUser(userId: String!): Youtube
         getTwitchVideosNoLogin: [TwitchVideo!]!
+        getYoutubeVideosNoLogin: YoutubeVideo
     }
 `;
 

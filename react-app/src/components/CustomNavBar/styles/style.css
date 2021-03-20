@@ -74,3 +74,45 @@
 #orSignUpButton {
     color: var(--silver);
 }
+
+.container {
+    position: relative;
+    text-align: left;
+    margin-left: -1rem;
+}
+
+.bottom-right {
+    position: absolute;
+    color: var(--silver);
+    bottom: -16px;
+    right: -15px;
+}
+
+.live {
+    background-color: red;
+    border-radius: 5px;
+    padding: 5px;
+    left: 0px;
+    top: 0px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: -2.5rem;
+  }
+
+.viewers {
+    background-color: rgba(0, 0, 0, 0.8);
+    bottom: 30px;
+    left: 5px;
+    padding: 5px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 100;
+    color: white;
+  }
+
+.bottom-left {
+    position: absolute;
+    left: 15px;
+    bottom: -1px;
+}

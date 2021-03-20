@@ -1,6 +1,6 @@
 import got from "got";
 
-import { YouTube } from "#root/db/models";
+import { User, YouTube } from "#root/db/models";
 
 import accessEnv from "#root/helpers/accessEnv"
 import generateUUID from "#root/helpers/generateUUID";
@@ -66,6 +66,32 @@ const setupRoutes = app => {
         message: "Everything went Ok !",
         body: created
       });
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.get("/youtube/videos", async (req, res, next) => {
+    try {
+      
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
+
+      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
+      + '?part=snippet'
+      + '&eventType=live'
+      + '&type=video'
+      + '&videoCategoryId=2'
+      + '0&maxResults=10', 
+      {
+        headers: {
+          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
+      }});  
+
+      return res.json(JSON.parse(response.body));
     } catch (e) {
       return next(e);
     }

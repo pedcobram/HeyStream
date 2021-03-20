@@ -1,7 +1,8 @@
 import React from "react";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-import TwitchVideosNoLogin from "#root/components/TwitchVideosNoLogin/TwitchVideosNoLogin";
+import TwitchVideosNoLogin from "#root/components/TwitchVideosNoLogin";
+import YoutubeVideosNoLogin from "#root/components/YoutubeVideosNoLogin";
 
 const Home = () => {
 
@@ -9,6 +10,7 @@ const Home = () => {
         <div>
             <CustomNavBar/>
             <TwitchVideosNoLogin/>
+            <YoutubeVideosNoLogin/>
         </div>
     );
 }

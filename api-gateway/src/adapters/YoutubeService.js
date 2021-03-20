@@ -24,6 +24,11 @@ export default class YoutubeService {
         return body;
     }
 
+    static async getYoutubeVideosNoLogin() {
+        const body = await got.get(`${YOUTUBE_SERVICE_URI}/youtube/videos`).json();
+        return body;
+    }
+
     static async deleteYoutubeSession({ userId }){
         const body = await got.delete(`${YOUTUBE_SERVICE_URI}/youtube/${userId}`).json();
         return body;

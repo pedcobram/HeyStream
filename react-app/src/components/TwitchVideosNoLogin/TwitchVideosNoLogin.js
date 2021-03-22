@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useQuery, gql } from "@apollo/client"
+import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -32,54 +31,8 @@ const SubText = styled.div`
     overflow: hidden;
 `;
 
-const Filters = styled.div`
-    display: flex;
-    justify-content: left;
-    width: 100%;
-    padding-left: 4rem;
-`;
 
-const Filter = styled.div`
-    padding-right: 1rem;
-`;
-
-const FilterText = styled.h3`
-    color: var(--silver);
-    padding-right: 1rem;
-`;
-
-const query = gql`
-    {
-        getTwitchVideosNoLogin {
-            id
-            user_id
-            user_login
-            user_name
-            game_name
-            type
-            title
-            viewer_count
-            started_at
-            language
-            thumbnail_url
-            tag_ids
-        }
-    }
-`;
-
-const TwitchVideosNoLogin = ()  => {
-
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const {data: videos} = useQuery(query);
-
-    function updateState(searchTerm, param) {
-        if(searchTerm == param) {
-            setSearchTerm('')
-        } else {
-            setSearchTerm(param)
-        }
-    }
+const TwitchVideosNoLogin = (props)  => {
 
     const capitalize = (s) => {
         return s.charAt(0).toUpperCase() + s.slice(1)
@@ -89,28 +42,14 @@ const TwitchVideosNoLogin = ()  => {
         return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'k' : Math.sign(num)*Math.abs(num)
     }
 
-    console.log(kFormatter(300178))
-
     return (
         <div>
-            <Filters>
-                <FilterText>Filters: </FilterText>
-                <Filter>
-                    <button className="btn btn-primary" onClick={() => {
-                        updateState(searchTerm, 'Twitch')
-                    }}>Twitch</button>
-                </Filter>
-                <Filter>
-                    <button className="btn btn-primary" onClick={() => {
-                        updateState(searchTerm, 'YouTube')
-                    }}>YouTube</button>
-                </Filter>
-            </Filters>
             <Container>
-                {videos?.getTwitchVideosNoLogin.map(v => ({...v, platform: 'Twitch'})).filter((video) => {
-                    if(searchTerm == '') {
+                {props.videos?.getTwitchVideosNoLogin.map(v => ({...v, platform: 'Twitch'})).filter((video) => {
+                    console.log(props.searchTerm)
+                    if(props.searchTerm == '') {
                         return video
-                    } else if (video.platform.toLowerCase() == searchTerm.toLowerCase()) {
+                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {
                         return video
                     }
                 }).map((video, idx) => (

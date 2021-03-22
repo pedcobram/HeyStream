@@ -5,8 +5,8 @@ import { User, YouTube } from "#root/db/models";
 import accessEnv from "#root/helpers/accessEnv"
 import generateUUID from "#root/helpers/generateUUID";
 
-const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "247824550638-k1e8mq2lj47cbr0v0pf41c8khj17qo4h.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "cphCSSPyRaJyMIyffQ4C080u");
+const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "172700488858-a6npf1l2m815lppv6oc7cunah030mccg.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs3XNo74owZJ");
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
@@ -92,6 +92,40 @@ const setupRoutes = app => {
       }});  
 
       return res.json(JSON.parse(response.body));
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.post("/youtube/refreshToken", async (req, res, next) => {
+    try {
+      
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      if (!yt) return await next(new Error("No data for this user ID!"));
+
+      const response = await got.post('https://www.googleapis.com/o/oauth2/token'
+          + '?client_id=' + YOUTUBE_CLIENT_ID
+          + '&client_secret=' + YOUTUBE_CLIENT_SECRET
+          + '&refresh_token=' + yt.dataValues.refresh_token
+          + '&grant_type=refresh_token',{ 
+          headers: {
+            Host: 'accounts.google.com',
+            ContentType: 'application/x-www-form-urlencoded'
+          }
+        }
+      );
+
+      const parsed_response = JSON.parse(response.body);
+
+      yt.access_token = parsed_response.access_token;
+
+      await yt.save();
+
+      return res.json({
+        message: "Youtube token updated correctly!"
+      });
     } catch (e) {
       return next(e);
     }

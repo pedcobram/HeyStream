@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 
 import accessEnv from "#root/helpers/accessEnv"
+import refreshYoutubeToken from "#root/helpers/refreshYoutubeToken"
 
 import setupRoutes from "./routes";
 
@@ -26,6 +27,9 @@ app.use((err, req, res, next) => {
         message: err.message
     });
 });
+
+//Cada 30 minutos refrescamos tokens de Youtube
+setInterval(refreshYoutubeToken, 1000*60*30)
 
 app.listen(PORT, "0.0.0.0", () => {
     console.info(`YouTube service listening on ${PORT}`) 

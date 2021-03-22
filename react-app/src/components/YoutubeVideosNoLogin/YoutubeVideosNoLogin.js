@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, gql, useLazyQuery } from "@apollo/client"
+import { gql } from "@apollo/client"
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -32,69 +32,20 @@ const SubText = styled.div`
     overflow: hidden;
 `;
 
-const Filters = styled.div`
-    display: flex;
-    justify-content: left;
-    width: 100%;
-    padding-left: 4rem;
-`;
-
-const Filter = styled.div`
-    padding-right: 1rem;
-`;
-
-const FilterText = styled.h3`
-    color: var(--silver);
-    padding-right: 1rem;
-`;
-
-const query = gql`
-    query {
-        getYoutubeVideosNoLogin {
-            nextPageToken
-            items {
-              id {
-                videoId
-              }
-              snippet {
-                publishedAt
-                channelId
-                title
-                description
-                thumbnails {
-                  medium {
-                    url
-                    width
-                    height
-                  }
-                }
-                channelTitle
-                liveBroadcastContent
-                }
-            }
-          }
-    }
-`;
-
-const YoutubeVideosNoLogin = ()  => {
-
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const {data: videos} = useQuery(query);
+const YoutubeVideosNoLogin = (props)  => {
 
     const capitalize = (s) => {
         return s.charAt(0).toUpperCase() + s.slice(1)
     }
 
-    console.log(videos?.getYoutubeVideosNoLogin.items)
-
     return (
         <div>
             <Container>
-                {videos?.getYoutubeVideosNoLogin.items.map(v => ({...v, platform: 'Youtube'})).filter((video) => {
-                    if(searchTerm == '') {
+                {props.videos?.getYoutubeVideosNoLogin.items.map(v => ({...v, platform: 'YouTube'})).filter((video) => {
+                    console.log(props.searchTerm)
+                    if(props.searchTerm == '') {
                         return video
-                    } else if (video.platform.toLowerCase() == searchTerm.toLowerCase()) {
+                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {
                         return video
                     }
                 }).map((video, idx) => (

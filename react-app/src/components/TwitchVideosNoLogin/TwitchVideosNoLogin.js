@@ -14,7 +14,6 @@ const TwitchVideosNoLogin = (props)  => {
         <div>
             <Container>
                 {props.videos?.getTwitchVideosNoLogin.map(v => ({...v, platform: 'Twitch'})).filter((video) => {
-                    console.log(props.searchTerm)
                     if(props.searchTerm == '') {
                         return video
                     } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {

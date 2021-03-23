@@ -1,6 +1,5 @@
 import React from "react";
 import gql from "graphql-tag";
-import styled from "styled-components";
 import { useMutation } from "@apollo/react-hooks";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -10,12 +9,6 @@ import { setTwitchSession } from "#root/store/ducks/twitchSession"
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import TextInput from "#root/components/shared/TextInput";
-
-const Wrapper = styled.div`
-    color: ${props => props.theme.mortar};
-    font-size: 0.9rem;
-    width: 100%
-`;
 
 const mutation = gql`
     mutation($code: String!, $userId: String!) {
@@ -37,7 +30,7 @@ const LandingTwitch = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const twitchCode = urlParams.get('code');
 
-    const [twitchLanding, {data, error}] = useMutation(mutation);   
+    const [twitchLanding] = useMutation(mutation);   
 
     const {
         formState: { isSubmitting },

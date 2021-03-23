@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client"
 import styled from "styled-components";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-import graphqlClient from "#root/api/graphql/graphqlClient";
 import getCookie from "#root/components/shared/functions/getCookie";
 
 import Container from 'react-bootstrap/Container'
@@ -61,32 +60,24 @@ const Title = styled.h2`
 
 const Account = () => {
 
-    const [twitchLink, setTwitchLink] = useState(String);
+    const {data: twitchAccount} = useQuery(query);
+    
+    const { data, refetch: refetchTwitchUser} = useQuery(query2, {
+        variables: { 
+        "userId": getCookie("userId")
+        }
+    })
+
+    const { data: youtubeLink, loading: loading3 } = useQuery(query3);
+    
+    const { data: youtubeUser, refetch: refetchYoutubeUser, loading: loading4 } = useQuery(query4, { 
+        variables: { 
+        "userId": getCookie("userId")
+        }
+    })
 
     const [deleteTwitchSession] = useMutation(mutation);
     const [deleteYoutubeSession] = useMutation(mutation2);
-
-    const { data, refetch: refetchTwitchUser } = useQuery(query2, {
-        variables: { 
-        "userId": getCookie("userId")
-        }
-    })
-
-    const { data: youtubeLink } = useQuery(query3);
-    
-    const { data: youtubeUser, refetch: refetchYoutubeUser } = useQuery(query4, { 
-        variables: { 
-        "userId": getCookie("userId")
-        }
-    })
-
-    useEffect(() => {
-        graphqlClient.query({ query }).then(({ data }) => {
-            if(data.getTwitchLinkAccount) {
-                setTwitchLink(data.getTwitchLinkAccount)
-            }
-        })
-    }, []); 
 
     return (
         <div>
@@ -97,10 +88,10 @@ const Account = () => {
                         <Title>Link Accounts</Title>
                     </Col>
                 </Row>
-                {data?.getTwitchUser ?
+                {getCookie("twitchAccessToken") ?
                     <Row style={rowStyle}>
                         <Col md={{ span: 0, offset: 8 }}>
-                        <a className="btn btn-dark" href={twitchLink.replace('\"', '').slice(0, -1)} onClick={evt => {
+                        <a className="btn btn-dark" href="#" onClick={evt => {
                             evt.preventDefault();
                             deleteTwitchSession({ variables: { userId: getCookie("userId") }});
                             refetchTwitchUser();
@@ -112,14 +103,14 @@ const Account = () => {
                 :
                     <Row style={rowStyle}>
                         <Col md={{ span: 0, offset: 8 }}>
-                            <a className="btn btn-dark" href={twitchLink.replace('\"', '').slice(0, -1)}> Link Twitch Account</a>   
+                            <a className="btn btn-dark" href={twitchAccount?.getTwitchLinkAccount.replace('\"', '').slice(0, -1)}> Link Twitch Account</a>   
                         </Col>
                     </Row>
                 }
-                {youtubeUser?.getYoutubeUser ?
+                {getCookie("youtubeAccessToken") ? 
                     <Row style={rowStyle}>
                         <Col md={{ span: 0, offset: 8 }}>
-                            <a className="btn btn-dark" href={youtubeLink?.getYoutubeLinkAccount.replace('\"', '').slice(0, -1)} onClick={evt => {
+                            <a className="btn btn-dark" href="#" onClick={evt => {
                             evt.preventDefault();
                             deleteYoutubeSession({ variables: { userId: getCookie("userId") }});
                             refetchYoutubeUser(); 

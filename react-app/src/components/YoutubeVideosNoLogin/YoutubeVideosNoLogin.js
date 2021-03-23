@@ -13,7 +13,6 @@ const YoutubeVideosNoLogin = (props)  => {
         <div>
             <Container>
                 {props.videos?.getYoutubeVideosNoLogin.items.map(v => ({...v, platform: 'YouTube'})).filter((video) => {
-                    console.log(props.searchTerm)
                     if(props.searchTerm == '') {
                         return video
                     } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {

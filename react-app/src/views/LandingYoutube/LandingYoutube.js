@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import TextInput from "#root/components/shared/TextInput";
 
-
 const mutation = gql`
     mutation($code: String!, $userId: String!) {
         youtubeLanding(code: $code, userId: $userId) 
@@ -37,7 +36,6 @@ const LandingYoutube = () => {
     } = useForm(); 
 
     const onSubmit = handleSubmit(async ({ code, userId }) => { 
-        
             await youtubeLanding({ 
                 variables: { 
                    code,
@@ -45,8 +43,6 @@ const LandingYoutube = () => {
                 } 
             })
             history.push("/account");
-        
-        
     })
 
     setInterval(() => {
@@ -71,7 +67,7 @@ const LandingYoutube = () => {
                         <form onSubmit={onSubmit}>
                             <TextInput  className="form-control mr-sm-2" disabled={false} name="code" type="hidden" defaultValue={youtubeCode} ref={register} />
                             <TextInput className="form-control mr-sm-2" disabled={false} name="userId" type="hidden" defaultValue={sessionUserId} ref={register} />
-                            <button  className="btn btn-primary my-2 my-sm-0" id="landing" disabled={isSubmitting} type="submit">Continue</button>
+                            <button style={{display:"none"}} className="btn btn-primary my-2 my-sm-0" id="landing" disabled={isSubmitting} type="submit">Continue</button>
                         </form>
                 </div>
             </div>

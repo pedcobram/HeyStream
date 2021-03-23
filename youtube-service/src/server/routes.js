@@ -49,6 +49,7 @@ const setupRoutes = app => {
       + '&scope=https://www.googleapis.com/auth/youtube.readonly'
       + '&response_type=code'
       + '&access_type=offline'
+      + '&prompt=consent'
 
       return res.json(uri)
 
@@ -65,6 +66,8 @@ const setupRoutes = app => {
         return next(new Error("Incorrect parameters !!"))
       }
 
+      const userId = req.body.userId;
+
       const response = await got.post('https://accounts.google.com/o/oauth2/token', {
         headers: {
           Host: 'accounts.google.com',
@@ -80,9 +83,9 @@ const setupRoutes = app => {
         }
       );    
 
-      const user = await got.get("http://users-service:7101/sessions/" + req.body.userId);
-
       const data = JSON.parse(response.body);
+
+      const user = await got.get("http://users-service:7101/sessions/" + req.body.userId);
 
       const created = await YouTube.create({
         id: generateUUID(),
@@ -107,7 +110,7 @@ const setupRoutes = app => {
       const yt = await YouTube.findOne({ attributes: {}, where: {
         userId: req.body.userId}});
 
-      if (!yt) return await next(new Error("No data for this user ID!"));
+      //if (!yt) return await next(new Error("No data for this user ID!"));
 
       const response = await got.post('https://www.googleapis.com/o/oauth2/token'
           + '?client_id=' + YOUTUBE_CLIENT_ID
@@ -141,7 +144,7 @@ const setupRoutes = app => {
       const yt = await YouTube.findOne({ attributes: {}, where: {
         userId: req.params.userId}});
 
-      if (!yt) return await next(new Error("No data for this user ID!"));
+      //if (!yt) return await next(new Error("No data for this user ID!"));
 
       return res.json(yt);
     } catch (e) {

@@ -9,8 +9,6 @@ import { MDBAlert } from 'mdbreact';
 
 import TextInput from "#root/components/shared/TextInput";
 
-import "../../styles/style.css"
-
 const Label = styled.label`
   display: block;
   :not(:first-child) {

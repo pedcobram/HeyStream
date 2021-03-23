@@ -11,32 +11,7 @@ const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "ebn5zvav8txjcujn
 
 const setupRoutes = app => {
 
-  app.get("/twitch/link", async (req, res, next) => {
-    try {
-
-      const uri = 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + TWITCH_CLIENT_ID 
-      + '&redirect_uri=' + REDIRECT_URI_LANDING 
-      + '&state=' + TWITCH_CLIENT_SECRET
-      + 'scopes=user_read';
-
-      return res.json(uri)
-
-    } catch (e) {
-      return next(e);
-    }
-  });
-
-  app.get("/twitch", async (req, res, next) => {
-    try {
-
-      const twitchUsers = await Twitch.findAll();
-      return res.json(twitchUsers)
-
-    } catch (e) {
-      return next(e);
-    }
-  })
-
+  // Get the top streams on Twitch for the home page
   app.get("/twitch/videos", async (req, res, next) => {
     try {
       
@@ -58,8 +33,7 @@ const setupRoutes = app => {
     }
   });
 
-  
-
+  // Get an App Token from Twitch
   app.post("/twitch/appToken", async (req, res, next) => {
     try {
 
@@ -105,6 +79,23 @@ const setupRoutes = app => {
     }
   });
 
+  // Get the URL to redirect an user to login to their Twitch Account
+  app.get("/twitch/link", async (req, res, next) => {
+    try {
+
+      const uri = 'https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=' + TWITCH_CLIENT_ID 
+      + '&redirect_uri=' + REDIRECT_URI_LANDING 
+      + '&state=' + TWITCH_CLIENT_SECRET
+      + 'scopes=user_read';
+
+      return res.json(uri)
+
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  // Process the code given by Twitch to obtain an access_token. Then store it on the DB
   app.post("/twitch/link", async (req, res, next) => {
     try {
 
@@ -139,6 +130,85 @@ const setupRoutes = app => {
     }
   });
 
+  // Get Twitch user by userId given in the POST body
+  app.post("/twitch/user", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response = await got.get('https://api.twitch.tv/helix/users', {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      return res.json(JSON.parse(response.body));
+    } catch (e)  {
+      return next(e);
+    }
+  });
+
+  // Get Twitch followed users by userId given in the POST body
+  app.post("/twitch/user/followed", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response1 = await got.get('https://api.twitch.tv/helix/users', {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      const response2 = await got.get('https://api.twitch.tv/helix/users/follows'
+      + '?from_id=' + JSON.parse(response1.body).data[0].id
+      + '&first=100', {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      return res.json(JSON.parse(response2.body));
+    } catch (e)  {
+      return next(e);
+    }
+  });
+
+  // Get Twitch User. Returns data if user is live
+  app.post("/twitch/stream", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response = await got.get('https://api.twitch.tv/helix/streams'
+      + '?user_id=' + req.body.twitchUserId, {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      return res.json(JSON.parse(response.body));
+    } catch (e)  {
+      return next(e);
+    }
+  });
+
+  // Get all Twitch data from all the users
+  app.get("/twitch", async (req, res, next) => {
+    try {
+
+      const twitchUsers = await Twitch.findAll();
+      return res.json(twitchUsers)
+
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  // Get Twitch user by userId from our DB
   app.get("/twitch/:userId", async (req, res, next) => {
     try {
       
@@ -151,6 +221,7 @@ const setupRoutes = app => {
     }
   });
 
+  // Delete Twitch user by userId from our DB
   app.delete("/twitch/:userId", async (req, res, next) => {
     try {
       

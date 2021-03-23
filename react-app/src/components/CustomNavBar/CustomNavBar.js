@@ -14,7 +14,8 @@ import DropdownButton from "react-bootstrap/DropdownButton"
 import NavDropdown from "react-bootstrap/NavDropdown"
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles/style.css"
+
+import logo from "../../images/logo.png"
 
 const query = gql`
     {
@@ -48,14 +49,27 @@ const CustomNavBar = () => {
         return (
             <>
                 <Navbar id="navbar" expand="lg">
-                    <Navbar.Brand id="logo" href="/">HeyStream</Navbar.Brand>
+                    <Navbar.Brand id="logo" href="/">
+                        <img
+                            src={logo}
+                            width="40"
+                            height="40"
+                            className="d-inline-block "
+                            alt="HeyStream logo"
+                        />{' '}
+                    HeyStream</Navbar.Brand>
                     <Nav className="ml-auto" id="nav" >
-                        <Nav.Item > 
+                        <Nav.Item>
+                            <Nav.Link id="myStreams" href="/myStreams">My Streams</Nav.Link>
+                        </Nav.Item> 
+                        <Nav.Item >
                             <NavDropdown title={session.user.email} id="collasible-nav-dropdown">
                                 <NavDropdown.Item id="navItem" href="/account">Account</NavDropdown.Item>
                             </NavDropdown>
                         </Nav.Item>
-                        <Nav.Item id="item"> <Account /> </Nav.Item>
+                        <Nav.Item id="item"> 
+                            <Account /> 
+                        </Nav.Item>
                     </Nav>
                 </Navbar>
                 <br />

@@ -12,7 +12,6 @@ import { setSession } from "#root/store/ducks/session";
 import { MDBAlert } from 'mdbreact';
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../styles/style.css"
 
 const Label = styled.label`
     display: block;

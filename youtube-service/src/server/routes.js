@@ -12,6 +12,34 @@ const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/yo
 
 const setupRoutes = app => {
 
+  // Get youtube top 10 streams for the home page
+  app.get("/youtube/videos", async (req, res, next) => {
+    try {
+      
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
+
+      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
+      + '?part=snippet'
+      + '&eventType=live'
+      + '&type=video'
+      + '&videoCategoryId=2'
+      + '0&maxResults=10', 
+      {
+        headers: {
+          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
+      }});  
+
+      return res.json(JSON.parse(response.body));
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  // Get the URL to redirect an user to login to their youtube account
   app.get("/youtube/link", async (req, res, next) => {
     try {
 
@@ -29,6 +57,7 @@ const setupRoutes = app => {
     }
   });
 
+  // Process the code given by Twitch to obtain an access_token. Then store it on the DB
   app.post("/youtube/link", async (req, res, next) => {
     try {
 
@@ -71,32 +100,7 @@ const setupRoutes = app => {
     }
   });
 
-  app.get("/youtube/videos", async (req, res, next) => {
-    try {
-      
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
-
-      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
-      + '?part=snippet'
-      + '&eventType=live'
-      + '&type=video'
-      + '&videoCategoryId=2'
-      + '0&maxResults=10', 
-      {
-        headers: {
-          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
-      }});  
-
-      return res.json(JSON.parse(response.body));
-    } catch (e) {
-      return next(e);
-    }
-  });
-
+  // Refresh the access_token of an userId
   app.post("/youtube/refreshToken", async (req, res, next) => {
     try {
       
@@ -131,6 +135,7 @@ const setupRoutes = app => {
     }
   });
 
+  // Get user's youtube data user by userId
   app.get("/youtube/:userId", async (req, res, next) => {
     try {
       const yt = await YouTube.findOne({ attributes: {}, where: {
@@ -144,6 +149,7 @@ const setupRoutes = app => {
     }
   });
 
+  // Delete user's youtube data user by userId
   app.delete("/youtube/:userId", async (req, res, next) => {
     try {
       
@@ -158,6 +164,5 @@ const setupRoutes = app => {
     }
   });
 }
-
 
 export default setupRoutes;

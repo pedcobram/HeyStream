@@ -85,6 +85,17 @@ const typeDefs = gql`
         pageInfo: PageInfo!
     }
 
+    type TwitchFollowedData {
+        to_id: String!
+        to_login: String!
+        to_name: String!
+    }
+
+    type TwitchFollowed {
+        total: String!
+        data: [TwitchFollowedData!]!
+    }
+
     type Mutation {
         createUser(email: String!, password: String!): User!
         createUserSession(email: String!, password: String!): UserSession!
@@ -105,6 +116,8 @@ const typeDefs = gql`
         getYoutubeUser(userId: String!): Youtube
         getTwitchVideosNoLogin: [TwitchVideo!]!
         getYoutubeVideosNoLogin: YoutubeVideo
+        getFollowedTwitchUsers(userId: String!): TwitchFollowed!
+        getTwitchStream(userId: String!, twitchUserId: String!): [TwitchVideo!]!
     }
 `;
 

@@ -94,9 +94,6 @@ const Home = () => {
     const {data: youtubeVideos} = useQuery(youtubeQuery);
     const {data: twitchVideos} = useQuery(twitchQuery);
 
-    var data = extend({}, youtubeVideos?.getYoutubeVideosNoLogin, twitchVideos?.getTwitchVideosNoLogin);
-    console.log(youtubeVideos)
-
     return (
         <div>
             <CustomNavBar/>

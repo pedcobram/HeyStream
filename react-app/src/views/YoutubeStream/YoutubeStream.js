@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom"
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 
-import '../styles/styles.css'
+
 
 const YoutubeStream = () => {
 

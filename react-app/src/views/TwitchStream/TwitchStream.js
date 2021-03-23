@@ -1,13 +1,9 @@
 import React from "react";
 import ReactPlayer from "react-player/twitch"
-import gql from "graphql-tag";
-import styled from "styled-components";
 
 import { useParams } from "react-router-dom"
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-
-import '../styles/styles.css'
 
 const TwitchStream = () => {
 

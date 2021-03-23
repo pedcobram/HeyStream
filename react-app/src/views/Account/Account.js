@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import graphqlClient from "#root/api/graphql/graphqlClient";
+import getCookie from "#root/components/shared/functions/getCookie";
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -57,17 +58,6 @@ const rowStyle = {
 const Title = styled.h2`
     color: var(--silver)
 `;
-
-function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
 
 const Account = () => {
 

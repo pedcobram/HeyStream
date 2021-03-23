@@ -6,6 +6,13 @@
     --grey: #464646;
 }
 
+html, body, #app {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%
+}
+
 .dropdown-menu  {
     background-color: var(--dark-grey);
     border: none;
@@ -115,4 +122,19 @@
     position: absolute;
     left: 15px;
     bottom: -1px;
+}
+
+#myStreams {
+    background-color: var(--dark-grey);
+    color: var(--silver);
+}
+
+#box {
+    display: inline-block;
+    margin-left: 5%
+}
+
+.center {
+    margin-top: 1%;
+    margin-left: 0%
 }

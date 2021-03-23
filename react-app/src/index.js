@@ -12,16 +12,10 @@ import store from "./store"
 import Router from "./Router"
 
 import * as theme from "./theme"
+import "./components/shared/styles/style.css"
 
 const GlobalStyle = createGlobalStyle`
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-    html, body, #app {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        width: 100%
-    }
 
     body {
         font-family: Roboto, sans-serif;

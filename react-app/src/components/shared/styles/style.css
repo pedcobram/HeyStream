@@ -134,7 +134,15 @@ html, body, #app {
     margin-left: 5%
 }
 
-.center {
-    margin-top: 1%;
-    margin-left: 0%
+.right {
+    float: right;
+    margin-right: 4rem; 
+}
+
+.centered {
+    justify-items: center;
+}
+
+#white {
+    color: var(--silver);
 }

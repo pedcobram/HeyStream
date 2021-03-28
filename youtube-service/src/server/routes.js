@@ -12,6 +12,50 @@ const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/yo
 
 const setupRoutes = app => {
 
+  // Get Youtube followed users by userId given in the POST body
+  app.post('/youtube/user/followed', async (req, res, next) => {
+    try {
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+  
+      const response = await got.get('https://www.googleapis.com/youtube/v3/subscriptions'
+      + '?part=snippet'
+      + '&mine=true'
+      + '&maxResults=50'
+      + '&order=relevance', {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token,
+        }
+      });
+  
+      return res.json(JSON.parse(response.body));
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  app.post("/youtube/stream", async (req, res, next) => {
+    try {
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+  
+      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
+      + '?part=snippet'
+      + '&channelId=' + req.body.channelId
+      + '&type=video'
+      + '&eventType=live'
+      + '&order=relevance', {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token,
+        }
+      });
+  
+      return res.json(JSON.parse(response.body));
+    } catch (e) {
+      return next(e);
+    }
+  });
+
   // Get youtube top 10 streams for the home page
   app.get("/youtube/videos", async (req, res, next) => {
     try {
@@ -26,8 +70,9 @@ const setupRoutes = app => {
       + '?part=snippet'
       + '&eventType=live'
       + '&type=video'
-      + '&videoCategoryId=2'
-      + '0&maxResults=10', 
+      + '&videoCategoryId=20'
+      + '&maxResults=10'
+      + '&order=viewCount', 
       {
         headers: {
           'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
@@ -58,15 +103,13 @@ const setupRoutes = app => {
     }
   });
 
-  // Process the code given by Twitch to obtain an access_token. Then store it on the DB
+  // Process the code given by Youtube to obtain an access_token. Then store it on the DB
   app.post("/youtube/link", async (req, res, next) => {
     try {
 
       if(!req.body.code || !req.body.userId) {
         return next(new Error("Incorrect parameters !!"))
       }
-
-      const userId = req.body.userId;
 
       const response = await got.post('https://accounts.google.com/o/oauth2/token', {
         headers: {
@@ -103,7 +146,7 @@ const setupRoutes = app => {
     }
   });
 
-  // Refresh the access_token of an userId
+  // Refresh the youtube access_token of an userId
   app.post("/youtube/refreshToken", async (req, res, next) => {
     try {
       

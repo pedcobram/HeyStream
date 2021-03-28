@@ -26,6 +26,7 @@
     "react-apollo-hooks": "^0.5.0",
     "react-app": "^1.1.2",
     "react-bootstrap": "^1.5.1",
+    "react-css-grid": "^2.0.0-0",
     "react-dom": "*",
     "react-hook-form": "^6.15.4",
     "react-is": ">= 16.8.0",

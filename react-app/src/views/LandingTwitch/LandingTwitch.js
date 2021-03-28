@@ -52,7 +52,7 @@ const LandingTwitch = () => {
     setInterval(() => {
         document.getElementById("landing")?.click();
     }, 1000);
-
+    
     return (
         <div>
             <CustomNavBar/>

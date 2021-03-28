@@ -54,9 +54,9 @@ const typeDefs = gql`
         videoId: String!
     }
 
-    type Item {
+    type ItemStream {
         id: ytID!
-        snippet: Snippet!
+        snippet: SnippetStream!
     }   
     
     type Medium {
@@ -69,7 +69,7 @@ const typeDefs = gql`
         medium: Medium!
     }
 
-    type Snippet {
+    type SnippetStream {
         publishedAt: Date!
         channelId: String!
         title: String!
@@ -79,10 +79,28 @@ const typeDefs = gql`
         liveBroadcastContent: String!
     }
 
-    type YoutubeVideo {
-        nextPageToken: String!
-        items: [Item!]!
+    type YoutubeStream {
+        nextPageToken: String
         pageInfo: PageInfo!
+        items: [ItemStream!]!
+    }
+
+    type YoutubeResource {
+        channelId: String!
+    }
+
+    type SnippetChannel {   
+        resourceId: YoutubeResource!
+    }
+
+    type ItemChannel {
+        snippet: SnippetChannel!
+    }
+
+    type YoutubeChannel {
+        nextPageToken: String
+        pageInfo: PageInfo!
+        items: [ItemChannel!]!
     }
 
     type TwitchFollowedData {
@@ -115,9 +133,11 @@ const typeDefs = gql`
         getYoutubeLinkAccount: String!
         getYoutubeUser(userId: String!): Youtube
         getTwitchVideosNoLogin: [TwitchVideo!]!
-        getYoutubeVideosNoLogin: YoutubeVideo
+        getYoutubeVideosNoLogin: YoutubeStream
         getFollowedTwitchUsers(userId: String!): TwitchFollowed!
         getTwitchStream(userId: String!, twitchUserId: String!): [TwitchVideo!]!
+        getFollowedYoutubeUsers(userId: String!): YoutubeChannel!
+        getYoutubeStream(userId: String, channelId: String!): String
     }
 `;
 

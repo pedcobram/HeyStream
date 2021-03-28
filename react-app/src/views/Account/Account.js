@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useHistory } from "react-router-dom";
 import { useQuery, gql, useMutation } from "@apollo/client"
 import styled from "styled-components";
 
@@ -59,6 +60,8 @@ const Title = styled.h2`
 `;
 
 const Account = () => {
+
+    if (!getCookie("userId")) useHistory().push("/");
 
     const {data: twitchAccount} = useQuery(query);
     

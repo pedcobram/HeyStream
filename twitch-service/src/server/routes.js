@@ -79,6 +79,37 @@ const setupRoutes = app => {
     }
   });
 
+  // Refresh the twitch access_token of an userId
+  app.post("/twitch/refreshToken", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      console.log(twitchUser)
+
+      const response = await got.post('https://id.twitch.tv/oauth2/token'
+      + '?grant_type=refresh_token'
+      + '&refresh_token=' + twitchUser.dataValues.refresh_token
+      + '&client_id=' + TWITCH_CLIENT_ID
+      + '&client_secret=' + TWITCH_CLIENT_SECRET)
+
+      console.log(JSON.parse(response.body))
+
+      const parsed_response = JSON.parse(response.body);
+
+      twitchUser.access_token = parsed_response.access_token;
+
+      await twitchUser.save();
+
+      return res.json({
+        message: "Twitch token updated correctly!"
+      });
+    } catch (e) {
+      return next(e);
+    }
+  });
+
   // Get the URL to redirect an user to login to their Twitch Account
   app.get("/twitch/link", async (req, res, next) => {
     try {

@@ -15,7 +15,7 @@ import NavDropdown from "react-bootstrap/NavDropdown"
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import logo from "../../images/logo.png"
+import logo from "#root/images/logo.png"
 
 const query = gql`
     {
@@ -52,9 +52,9 @@ const CustomNavBar = () => {
                     <Navbar.Brand id="logo" href="/">
                         <img
                             src={logo}
-                            width="40"
+                            width="45"
                             height="40"
-                            className="d-inline-block "
+                            className="d-inline-block"
                             alt="HeyStream logo"
                         />{' '}
                     HeyStream</Navbar.Brand>
@@ -82,7 +82,15 @@ const CustomNavBar = () => {
     return (
         <>
             <Navbar id="navbar" expand="lg">
-                <Navbar.Brand id="logo" href="/">HeyStream</Navbar.Brand>
+                    <Navbar.Brand id="logo" href="/">
+                        <img
+                            src={logo}
+                            width="45"
+                            height="40"
+                            className="d-inline-block"
+                            alt="HeyStream logo"
+                        />{' '}
+                    HeyStream</Navbar.Brand>
                 <Nav className="ml-auto" id="nav">
                     <Nav.Item>
                         <DropdownButton title="Account" key="left" id="dropdown-button-drop-left" drop="left">

@@ -9,3 +9,5 @@ export { default as getTwitchVideosNoLogin } from "./getTwitchVideosNoLogin"
 export { default as getYoutubeVideosNoLogin } from "./getYoutubeVideosNoLogin"
 export { default as getFollowedTwitchUsers} from "./getFollowedTwitchUsers";
 export { default as getTwitchStream} from "./getTwitchStream";
+export { default as getFollowedYoutubeUsers} from "./getFollowedYoutubeUsers";
+export { default as getYoutubeStream} from "./getYoutubeStream";

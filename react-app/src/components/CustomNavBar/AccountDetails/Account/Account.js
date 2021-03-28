@@ -2,6 +2,7 @@ import  { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag"
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import { clearSession } from "#root/store/ducks/session";
 
@@ -11,9 +12,19 @@ const mutation = gql`
     }
 `;
 
-const Account = () => {
+const Account = (props) => {
+
+    const history = useHistory();
+
     const dispatch = useDispatch();
-    const [deleteUserSession] = useMutation(mutation);
+    const [deleteUserSession, loading, error] = useMutation(mutation, {
+        onCompleted({ deleteUserSession }) {
+            window.location.reload();
+        } 
+    });
+
+    if(error) return null
+
     const session = useSelector(state => state.session);
 
     return (

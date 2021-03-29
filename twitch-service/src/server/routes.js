@@ -34,7 +34,7 @@ const setupRoutes = app => {
   });
 
   // Get an App Token from Twitch
-  app.post("/twitch/appToken", async (req, res, next) => {
+  app.get("/twitch/appToken", async (req, res, next) => {
     try {
 
       const response = await got.post('https://id.twitch.tv/oauth2/token'

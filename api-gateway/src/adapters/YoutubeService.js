@@ -28,11 +28,11 @@ export default class YoutubeService {
         return body;
     }
 
-    static async getYoutubeStream({ userId, channelId }) {
-        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/stream`, {
+    static async getYoutubeStream({ userId, pageToken }) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams`, {
             json: {
                 userId,
-                channelId
+                pageToken
             }
         });
         return body;

@@ -2,8 +2,9 @@ import got from "got";
 
 import { User, YouTube } from "#root/db/models";
 
-import accessEnv from "#root/helpers/accessEnv"
+import accessEnv from "#root/helpers/accessEnv";
 import generateUUID from "#root/helpers/generateUUID";
+import checkChannelLive from "#root/helpers/checkChannelLive";
 
 const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "172700488858-a6npf1l2m815lppv6oc7cunah030mccg.apps.googleusercontent.com");
 const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs3XNo74owZJ");
@@ -11,6 +12,54 @@ const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
 const setupRoutes = app => {
+  
+  app.post('/youtube/streams', async (req, res, next) => {
+    try {
+
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+  
+      const response1 = await got.get('https://www.googleapis.com/youtube/v3/subscriptions'
+      + '?part=snippet'
+      + '&mine=true'
+      + '&maxResults=50'
+      + '&order=relevance'
+      + '&pageToken=' + req.body.pageToken, {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token,
+        }
+      });
+
+      var array = [];
+
+      for(let i = 0; i < 5; i = i + 1) {
+        await Promise.all([
+          checkChannelLive(JSON.parse(response1.body).items[0+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[1+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[2+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[3+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[4+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[5+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[6+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[7+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[8+10*i].snippet.resourceId.channelId, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[9+10*i].snippet.resourceId.channelId, yt.access_token),
+        ]).then((values) => {
+          for(let val of values) {
+            if(val != null) {
+              array.push(val);
+            }
+          }
+        });
+      }
+
+      return res.json({
+        data: array
+      })
+    } catch (e) {
+      return next(e);
+    }
+  });
 
   // Get Youtube followed users by userId given in the POST body
   app.post('/youtube/user/followed', async (req, res, next) => {

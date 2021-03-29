@@ -114,6 +114,10 @@ const typeDefs = gql`
         data: [TwitchFollowedData!]!
     }
 
+    type YoutubeStreams {
+        data: [SnippetStream!]!
+    }
+
     type Mutation {
         createUser(email: String!, password: String!): User!
         createUserSession(email: String!, password: String!): UserSession!
@@ -137,7 +141,7 @@ const typeDefs = gql`
         getFollowedTwitchUsers(userId: String!): TwitchFollowed!
         getTwitchStream(userId: String!, twitchUserId: String!): [TwitchVideo!]!
         getFollowedYoutubeUsers(userId: String!): YoutubeChannel!
-        getYoutubeStream(userId: String, channelId: String!): String
+        getYoutubeStreams(userId: String!, pageToken: String): YoutubeStreams!
     }
 `;
 

@@ -2,71 +2,79 @@ import React, { useState } from "react";
 import Grid from 'react-css-grid'
 import { useHistory } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
+import styled from "styled-components";
 
 import getCookie from "../shared/functions/getCookie"
 
-//import YoutubeStream from "../YoutubeStream"
+import YoutubeStream from "../YoutubeStream"
+import { printIntrospectionSchema } from "graphql";
 
-const youtubeQuery = gql`
-query($userId: String!) {
-        getFollowedYoutubeUsers(userId: $userId) {
-        nextPageToken
-        pageInfo {
-            totalResults
-            resultsPerPage
-        }
-        items {
-            snippet {
-            resourceId {
-                channelId
-            }
-            }
-        }
-        }
-    }
+const PlatformText = styled.h3`
+    color: var(--silver);
+    margin-top: 1rem;
+    padding-left: 2.5rem;
 `;
 
-const MyYoutubeStreams = ()  => {
+const youtubeQuery = gql`
+    query($userId: String!, $pageToken: String) {
+        getYoutubeStreams(userId: $userId, pageToken: $pageToken) {
+            data {
+                publishedAt
+                channelId
+                title
+                description
+                thumbnails {
+                medium {
+                    url
+                    width
+                    height
+                }
+                }
+                channelTitle
+                liveBroadcastContent
+            },
+            nextPageToken
+        }
+        }
+`;
+
+const MyYoutubeStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    const [searchTerm, setSearchTerm] = useState('')
-    const [visibleStreams, setVisibleStreams] = useState(20);
+    const [pageToken, setPageToken] = useState("");
+    var youtubeData = [];
+    var token = "";
 
-    const { loading, error, data } = useQuery(youtubeQuery, {
+    const { data, loading } = useQuery(youtubeQuery, {
         variables: { 
-            userId: getCookie("userId")
-        },
+            userId: getCookie("userId"),
+            pageToken: ""
+        }
     });
 
-    console.log(data)
-
-    if(loading && !data) return null;
-
-    function updateState(searchTerm, param) {
-        if(searchTerm == param) {
-            setSearchTerm('')
-        } else {
-            setSearchTerm(param)
-        }
-    }
+    if (loading) return null;
+    if (!loading && data) token = data?.getYoutubeStreams.nextPageToken
 
     const clickSeeMore = () => {
-        setVisibleStreams(dataLen);
+        setPageToken(token);
     }
 
-    const clickSeeLess = () => {
-        setVisibleStreams(20);
-    }
+    console.log(pageToken)
 
     return (
         <div>
+            <button className="btn btn-dark" type="button" onClick={clickSeeMore}>
+                See more YouTube Streams
+            </button>
             <Grid className="centered">
-                {data?.getFollowedYoutubeUsers.items.map((item, idx) => (
-                    <div id="white">
-                        {item.snippet.resourceId.channelId}
-                    </div>
-                ))}
+                {data?.getYoutubeStreams.data.length == 0 ? 
+                    <PlatformText>There are no YouTube streamers live that you follow</PlatformText>
+                    : 
+                    youtubeData?.getYoutubeStreams.data.map((item, idx) => (
+                        <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} />
+                    ))
+                }
             </Grid>
         </div>
     )

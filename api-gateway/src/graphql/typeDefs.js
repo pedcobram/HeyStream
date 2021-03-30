@@ -115,7 +115,8 @@ const typeDefs = gql`
     }
 
     type YoutubeStreams {
-        data: [SnippetStream!]!
+        data: [SnippetStream]
+        nextPageToken: String!
     }
 
     type Mutation {

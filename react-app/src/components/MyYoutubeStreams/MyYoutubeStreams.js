@@ -48,20 +48,17 @@ const MyYoutubeStreams = (props)  => {
         }
     });
 
-    //console.log(data?.getYoutubeStreams.response[0].channelTitle)
+    console.log(data?.getYoutubeStreams.response[0].channelTitle)
 
     return (
         <Grid className="centered">
-        {loading ?
-            <img src={ loadingGif } width="50px" height="50px" />
-        :
-            data?.getYoutubeStreams.response.length == 0 ? 
+            {data?.getYoutubeStreams.response.length == 0 ? 
                 <PlatformText>There are no YouTube streamers live that you follow</PlatformText>
             :
                 data?.getYoutubeStreams.response.map((item, idx) => (
                     <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} />
                 ))
-        }
+            }
         </Grid>
     )
 };

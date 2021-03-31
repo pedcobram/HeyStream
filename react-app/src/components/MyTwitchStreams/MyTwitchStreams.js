@@ -1,68 +1,52 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from 'react-css-grid'
 import { useHistory } from "react-router-dom";
-import { useQuery, gql } from "@apollo/client";
 
 import getCookie from "../shared/functions/getCookie"
+import capitalize from "../shared/functions/capitalize"
+import kFormatter from "../shared/functions/kFormatter"
 
-import TwitchStream from "../TwitchStream"
-
-const twitchQuery = gql`
-    query($userId: String!) {
-        getFollowedTwitchUsers(userId: $userId) {
-        total
-        data {
-            to_id
-            to_login
-            to_name
-        }
-        }
-    }
-`;
+import SubText from "../shared/SubText"
+import Text from "../shared/Text"
+import Video from "../shared/Video"
 
 const MyTwitchStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    const [visibleStreams, setVisibleStreams] = useState(20);
-
-    const { loading, data } = useQuery(twitchQuery, {
-        variables: { 
-            userId: getCookie("userId")
-        },
-    });
-
-    if(loading && !data) return null;
-  
-    var dataLen = data?.getFollowedTwitchUsers.data.length;
-
-    const clickSeeMore = () => {
-        setVisibleStreams(dataLen);
-    }
-
-    const clickSeeLess = () => {
-        setVisibleStreams(20);
-    }
+    if(props.loading && !props.videos) return null;
 
     return (
-        <div>
-            <div className="right">
-                {visibleStreams == dataLen ?
-                    <button className="btn btn-dark" type="button" onClick={clickSeeLess}>
-                        See less Twitch Streams
-                    </button>
-                :
-                    <button className="btn btn-dark" type="button" onClick={clickSeeMore}> 
-                        See more Twitch Streams
-                    </button>
-                }
-            </div>
-            <Grid className="centered">
-                {data?.getFollowedTwitchUsers.data.slice(0, visibleStreams).map((item, idx) => (
-                    <TwitchStream  key={idx} to_id={item.to_id} to_login={item.to_login} to_name={item.to_name} searchTerm={props.searchTerm}></TwitchStream>
-                ))}
-            </Grid>
-        </div>
+        <Grid autoFlow='column'>  
+            {props.videos.map(v => ({...v, platform: 'Twitch'})).slice(0, props.visibleStreams).filter((video) => {
+                    if(props.searchTerm == '') {
+                        return video
+                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {
+                        return video
+                    }
+                }).map((data, idx) => (
+                <Video key={idx}>
+                    <div className="container">
+                        <a href={"/twitch/stream/{user}".replace('{user}', data?.user_name)}>
+                            <img src={data?.thumbnail_url.replace('{width}', 320).replace('{height}', 180)} />
+                        </a>
+                        <div className="bottom-right">
+                            <p className="live">
+                                {capitalize(data?.type)}
+                            </p>
+                        </div>
+                        <div className="bottom-left">
+                            <div className="viewers">
+                                {kFormatter(data?.viewer_count)} viewers
+                            </div>
+                        </div>
+                    </div>
+                    <Text title={data?.title}>{data?.title}</Text>
+                    <SubText>{data?.user_name}</SubText>
+                    <SubText>{data?.game_name}</SubText>
+                </Video>
+            ))}    
+        </Grid>
     )
 };
 

@@ -3,6 +3,8 @@ import got from "got";
 
 import accessEnv from "#root/helpers/accessEnv"
 import generateUUID from "#root/helpers/generateUUID";
+import checkChannelLive from "#root/helpers/checkChannelLive";
+import parseFollowedChannelsPage from "#root/helpers/parseFollowedChannelsPage";
 
 const TWITCH_CLIENT_ID2 = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
@@ -12,92 +14,10 @@ const TWITCH_CLIENT_SECRET2 = accessEnv("TWITCH_CLIENT_SECRET", "ebn5zvav8txjcuj
 const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
 const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
 
-const checkChannelLive = async (channelArray, access_token) => {
-
-  /*
-  for (let i in channelArray) {
-    if (channelArray[i] == null) {
-      return null;
-    }
-  }
-  */
-  
-  const response = await got.get('https://api.twitch.tv/helix/streams'
-      + '?user_name=' + channelArray[0]
-      + '&user_name=' + channelArray[1]
-      + '&user_name=' + channelArray[2]
-      + '&user_name=' + channelArray[3]
-      + '&user_name=' + channelArray[4],
-      {
-        headers: {
-          'Authorization': 'Bearer ' + access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-        }
-  });
-  
-  console.log('https://api.twitch.tv/helix/streams'
-  + '?user_name=' + channelArray[0]
-  + '&user_name=' + channelArray[1]
-  + '&user_name=' + channelArray[2]
-  + '&user_name=' + channelArray[3]
-  + '&user_name=' + channelArray[4])
-
-  //console.log(JSON.parse(response.body).data);
-
-  if(JSON.parse(response.body).data.length == 0) return null
-  return JSON.parse(response.body).data
-}
-
-const parseFollowedChannelsPage = async (myChannelId, pagination, access_token) => {
-  var array = [];
-
-  const response2 = await got.get('https://api.twitch.tv/helix/users/follows'
-      + '?from_id=' + myChannelId
-      + '&first=50'
-      + '&after=' + pagination, {
-        headers: {
-          'Authorization': 'Bearer ' + access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-  }});
-
-  const resPagination = JSON.parse(response2.body).pagination.cursor
-
-  var channelArray = [];
-  for(let b = 0; b < 5; b++) {
-    var dirtyArray = [];
-    for (let a = 0; a < 10; a++) {
-      dirtyArray.push(JSON.parse(response2.body).data[a+10*b]?.to_name ? JSON.parse(response2.body).data[a+10*b].to_name : null);
-    }
-    channelArray.push(dirtyArray);
-  }
-
-  var channelArray = [].concat.apply([], channelArray);
-
-  await Promise.all([
-    await checkChannelLive(channelArray.slice(0,5), access_token),
-    await checkChannelLive(channelArray.slice(5,10), access_token),
-    await checkChannelLive(channelArray.slice(10,15), access_token),
-    await checkChannelLive(channelArray.slice(15,20), access_token),
-    await checkChannelLive(channelArray.slice(20,25), access_token),
-    await checkChannelLive(channelArray.slice(25,30), access_token),
-    await checkChannelLive(channelArray.slice(30,35), access_token),
-    await checkChannelLive(channelArray.slice(35,40), access_token),
-    await checkChannelLive(channelArray.slice(40,45), access_token),
-    await checkChannelLive(channelArray.slice(45,50), access_token)
-  ]).then((values) => {
-    for(let val of values) {
-      if(val != null) {
-        array.push(val);
-      }
-    }
-  });
- 
-  return {resPagination, array}
-};
-
 const setupRoutes = app => {
 
-  app.post("/twitch/test", async (req, res, next) => {
+  //Get parsed list of live users from all the streamers the users follows
+  app.post("/twitch/streams", async (req, res, next) => {
     try {
 
       const twitchUser = await Twitch.findOne({ attributes: {}, where: {
@@ -123,7 +43,7 @@ const setupRoutes = app => {
       for(let b = 0; b < 5; b++) {
         var dirtyArray = [];
         for (let a = 0; a < 10; a++) {
-          dirtyArray.push(JSON.parse(response2.body).data[a+10*b]?.to_name ? JSON.parse(response2.body).data[a+10*b].to_name : null);
+          dirtyArray.push(JSON.parse(response2.body).data[a+10*b]?.to_login ? JSON.parse(response2.body).data[a+10*b].to_login : null);
         }
         channelArray2.push(dirtyArray);
       }
@@ -131,19 +51,9 @@ const setupRoutes = app => {
       var channelArray = [].concat.apply([], channelArray2);
       var responseArray = []
 
-      //console.log(channelArray.slice(5,10))
-
       await Promise.all([
-        await checkChannelLive(channelArray.slice(0,5), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(5,10), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(10,15), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(15,20), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(20,25), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(25,30), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(30,35), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(35,40), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(40,45), twitchUser.access_token),
-        await checkChannelLive(channelArray.slice(45,50), twitchUser.access_token)
+        await checkChannelLive(channelArray.slice(0,25), twitchUser.access_token),
+        await checkChannelLive(channelArray.slice(25,50), twitchUser.access_token),
       ]).then((values) => {
         for(let val of values) {
           if(val != null) {
@@ -151,7 +61,7 @@ const setupRoutes = app => {
           }
         }
       });
-      /*
+      
       const totalResults = JSON.parse(response2.body).total;
       const resultsPerPage = 50;
       var pagination = typeof JSON.parse(response2.body).pagination.cursor == 'undefined' ? "" : JSON.parse(response2.body).pagination.cursor;
@@ -164,11 +74,11 @@ const setupRoutes = app => {
         responseArray.push(array)
         i = i + resultsPerPage
       }
-      */
+      
       var flattenedResponse = [].concat.apply([], responseArray);
 
       return res.json({
-        flattenedResponse
+        response: flattenedResponse
       });
     } catch (e)  {
       return next(e);
@@ -337,53 +247,6 @@ const setupRoutes = app => {
       return res.json(JSON.parse(response.body));
     } catch (e)  {
       return next(e); 
-    }
-  });
-
-  // Get Twitch followed users by userId given in the POST body
-  app.post("/twitch/user/followed", async (req, res, next) => {
-    try {
-
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
-
-      const response1 = await got.get('https://api.twitch.tv/helix/users', {
-        headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-      }}); 
-
-      const response2 = await got.get('https://api.twitch.tv/helix/users/follows'
-      + '?from_id=' + JSON.parse(response1.body).data[0].id
-      + '&first=100', {
-        headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-      }}); 
-
-      return res.json(JSON.parse(response2.body));
-    } catch (e)  {
-      return next(e);
-    }
-  });
-
-  // Get Twitch User. Returns data if user is live
-  app.post("/twitch/stream", async (req, res, next) => {
-    try {
-
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
-
-      const response = await got.get('https://api.twitch.tv/helix/streams'
-      + '?user_id=' + req.body.twitchUserId, {
-        headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-      }}); 
-
-      return res.json(JSON.parse(response.body));
-    } catch (e)  {
-      return next(e);
     }
   });
 

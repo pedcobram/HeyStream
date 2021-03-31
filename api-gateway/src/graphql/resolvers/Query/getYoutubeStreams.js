@@ -1,7 +1,7 @@
 import YoutubeService from "#root/adapters/YoutubeService";
 
-const getYoutubeStreamsResolver = async (obj, { userId, pageToken }, context) => {
-    const body = await YoutubeService.getYoutubeStream({ userId, pageToken });
+const getYoutubeStreamsResolver = async (obj, { userId }, context) => {
+    const body = await YoutubeService.getYoutubeStreams({ userId });
 
     return JSON.parse(body.body);
 };

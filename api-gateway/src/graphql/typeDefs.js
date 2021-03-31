@@ -138,10 +138,9 @@ const typeDefs = gql`
         getYoutubeUser(userId: String!): Youtube
         getTwitchVideosNoLogin: [TwitchVideo!]!
         getYoutubeVideosNoLogin: YoutubeStream
-        getFollowedTwitchUsers(userId: String!): TwitchFollowed!
-        getTwitchStream(userId: String!, twitchUserId: String!): [TwitchVideo!]!
+        getTwitchStreams(userId: String!): [TwitchVideo]
         getFollowedYoutubeUsers(userId: String!): YoutubeChannel!
-        getYoutubeStreams(userId: String!, pageToken: String): YoutubeStreams!
+        getYoutubeStreams(userId: String!): YoutubeStreams!
     }
 `;
 

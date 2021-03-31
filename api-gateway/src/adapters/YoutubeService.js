@@ -19,20 +19,10 @@ export default class YoutubeService {
         return body;
     }
 
-    static async getFollowedYoutubeUsers({ userId }) {
-        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/user/followed`, {
-            json: {
-                userId
-            }
-        });
-        return body;
-    }
-
-    static async getYoutubeStream({ userId, pageToken }) {
+    static async getYoutubeStreams({ userId }) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams`, {
             json: {
-                userId,
-                pageToken
+                userId
             }
         });
         return body;

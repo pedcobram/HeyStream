@@ -19,20 +19,10 @@ export default class TwitchService {
         return body;
     }
 
-    static async getFollowedTwitchUsers({ userId }) {
-        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/user/followed`, {
+    static async getTwitchStreams({ userId }) {
+        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/streams`, {
             json: {
                 userId
-            }
-        });
-        return body;
-    }
-
-    static async getTwitchStream({ userId, twitchUserId }) {
-        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/stream`, {
-            json: {
-                userId,
-                twitchUserId
             }
         });
         return body;

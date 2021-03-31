@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from 'react-css-grid'
 import { useHistory } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
@@ -7,7 +7,6 @@ import styled from "styled-components";
 import getCookie from "../shared/functions/getCookie"
 
 import YoutubeStream from "../YoutubeStream"
-import { printIntrospectionSchema } from "graphql";
 
 const PlatformText = styled.h3`
     color: var(--silver);
@@ -16,67 +15,54 @@ const PlatformText = styled.h3`
 `;
 
 const youtubeQuery = gql`
-    query($userId: String!, $pageToken: String) {
-        getYoutubeStreams(userId: $userId, pageToken: $pageToken) {
-            data {
+    query($userId: String!) {
+        getYoutubeStreams(userId: $userId) {
+            response {
                 publishedAt
                 channelId
                 title
                 description
                 thumbnails {
-                medium {
+                    medium {
                     url
                     width
                     height
-                }
+                    }
                 }
                 channelTitle
                 liveBroadcastContent
-            },
-            nextPageToken
-        }
-        }
+                }
+            }
+    }
 `;
 
 const MyYoutubeStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    const [pageToken, setPageToken] = useState("");
-    var youtubeData = [];
-    var token = "";
+    const loadingGif = require('../../images/loadingIcon.gif');
 
     const { data, loading } = useQuery(youtubeQuery, {
         variables: { 
-            userId: getCookie("userId"),
-            pageToken: ""
+            userId: getCookie("userId")
         }
     });
 
-    if (loading) return null;
-    if (!loading && data) token = data?.getYoutubeStreams.nextPageToken
-
-    const clickSeeMore = () => {
-        setPageToken(token);
-    }
-
-    console.log(pageToken)
+    //console.log(data?.getYoutubeStreams.response[0].channelTitle)
 
     return (
-        <div>
-            <button className="btn btn-dark" type="button" onClick={clickSeeMore}>
-                See more YouTube Streams
-            </button>
-            <Grid className="centered">
-                {data?.getYoutubeStreams.data.length == 0 ? 
-                    <PlatformText>There are no YouTube streamers live that you follow</PlatformText>
-                    : 
-                    youtubeData?.getYoutubeStreams.data.map((item, idx) => (
-                        <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} />
-                    ))
-                }
-            </Grid>
-        </div>
+        <Grid className="centered">
+        {loading ?
+            <img src={ loadingGif } width="50px" height="50px" />
+        :
+            data?.getYoutubeStreams.response.length == 0 ? 
+                <PlatformText>There are no YouTube streamers live that you follow</PlatformText>
+            :
+                data?.getYoutubeStreams.response.map((item, idx) => (
+                    <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} />
+                ))
+        }
+        </Grid>
     )
 };
 

@@ -1,19 +1,23 @@
 import got from "got";
-const tunnel =  require("tunnel");
 
 import { User, YouTube } from "#root/db/models";
 
 import accessEnv from "#root/helpers/accessEnv";
 import generateUUID from "#root/helpers/generateUUID";
 import checkChannelLive from "#root/helpers/checkChannelLive";
+import parseFollowedChannelsPage from "#root/helpers/parseFollowedChannelsPage"
 
-const YOUTUBE_CLIENT_ID1 = accessEnv("YOUTUBE_CLIENT_ID", "172700488858-a6npf1l2m815lppv6oc7cunah030mccg.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET1 = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs3XNo74owZJ");
+const YOUTUBE_CLIENT_ID2 = accessEnv("YOUTUBE_CLIENT_ID", "172700488858-a6npf1l2m815lppv6oc7cunah030mccg.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET2 = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs3XNo74owZJ");
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
+const REDIRECT_URI_LANDING2 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
+
+const YOUTUBE_CLIENT_ID1 = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET1 = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
 const REDIRECT_URI_LANDING1 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
-const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
+const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjhqmmtbd2vqde1ulp2mn7csd5.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
 const setupRoutes = app => {
@@ -23,46 +27,60 @@ const setupRoutes = app => {
 
       const yt = await YouTube.findOne({ attributes: {}, where: {
         userId: req.body.userId}});
-  
+
+      const accessToken = yt.access_token;
+
       const response1 = await got.get('https://www.googleapis.com/youtube/v3/subscriptions'
-      + '?part=snippet'
-      + '&mine=true'
-      + '&maxResults=1'
-      + '&order=relevance'
-      + '&pageToken=' + req.body.pageToken, {
-        headers: {
-          'Authorization': 'Bearer ' + yt.access_token,
-        },
+        + '?part=snippet'
+        + '&mine=true'
+        + '&maxResults=50'
+        + '&order=relevance'
+        + '&pageToken=', {
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
       });
 
-      var array = [];
+      var responseArray = [];
 
-      for(let i = 0; i < 5; i = i + 1) {
+      for(let a = 0; a < 5; a = a + 1) {
         await Promise.all([
-          checkChannelLive(JSON.parse(response1.body).items[0+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[0+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[1+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[1+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[2+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[2+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[3+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[3+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[4+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[4+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[5+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[5+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[6+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[6+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[7+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[7+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[8+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[8+10*i].snippet.resourceId.channelId : null, yt.access_token),
-          checkChannelLive(JSON.parse(response1.body).items[9+10*i]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[9+10*i].snippet.resourceId.channelId : null, yt.access_token),
+          checkChannelLive(JSON.parse(response1.body).items[0+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[0+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[1+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[1+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[2+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[2+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[3+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[3+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[4+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[4+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[5+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[5+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[6+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[6+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[7+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[7+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[8+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[8+10*a].snippet.resourceId.channelId : null, accessToken),
+          checkChannelLive(JSON.parse(response1.body).items[9+10*a]?.snippet.resourceId.channelId ? JSON.parse(response1.body).items[9+10*a].snippet.resourceId.channelId : null, accessToken),
         ]).then((values) => {
           for(let val of values) {
             if(val != null) {
-              array.push(val);
+              responseArray.push(val);
             }
           }
         });
       }
 
-      const nextPageToken = JSON.parse(response1.body).nextPageToken
+      const totalResults = JSON.parse(response1.body).pageInfo.totalResults;
+      const resultsPerPage = JSON.parse(response1.body).pageInfo.resultsPerPage;
+      var nextPageToken = typeof JSON.parse(response1.body).nextPageToken == 'undefined' ? "" : JSON.parse(response1.body).nextPageToken;
 
+      var i = resultsPerPage;
+      
+      while(i < totalResults) {
+        const {resNextPageToken, array} = await parseFollowedChannelsPage(nextPageToken, accessToken);
+        nextPageToken = resNextPageToken
+        responseArray.push(array)
+        i = i + resultsPerPage
+      }
+
+      var flattenedResponse = [].concat.apply([], responseArray);
+     
       return res.json({
-        data: array,
-        nextPageToken: nextPageToken
+        response: flattenedResponse
       })
     } catch (e) {
       return next(e);

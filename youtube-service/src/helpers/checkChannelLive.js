@@ -1,9 +1,4 @@
 import got from "got";
-import tunnel from "tunnel";
-import serversList from './serverList';
-import { HttpsProxyAgent } from "hpagent";
-
-
 
 const checkChannelLive = async (channelId, access_token) => {
 
@@ -32,9 +27,8 @@ const checkChannelLive = async (channelId, access_token) => {
           'Authorization': 'Bearer ' + access_token,
         }
       });
-  
-      return JSON.parse(response.body).items[0].snippet;
-
+      
+    return JSON.parse(response.body).items.length > 0 ? JSON.parse(response.body).items[0].snippet : [];
   } else {
     return null;
   }

@@ -1,10 +1,10 @@
 import React from "react";
 
-import capitalize from "../shared/functions/capitalize"
+import capitalize from "../shared/functions/capitalize";
 
-import SubText from "../shared/SubText"
-import Text from "../shared/Text"
-import Video from "../shared/Video"
+import SubText from "../shared/SubText";
+import Text from "../shared/Text";
+import Video from "../shared/Video";
 
 const YoutubeStream = (props)  => {
 
@@ -16,7 +16,8 @@ const YoutubeStream = (props)  => {
             {array.map(v => ({...v, platform: 'YouTube'})).filter((video) => {
                     if(props.searchTerm == '') {
                         return video
-                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {
+                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase() || 
+                    video.channelTitle.toLowerCase().includes(props.searchTerm.toLowerCase())) {
                         return video
                     }
                 }).map((video, idx) => (

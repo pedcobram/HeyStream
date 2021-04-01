@@ -38,6 +38,32 @@ const query4 = gql`
     }
 `;
 
+const query5 = gql`
+    query($userId: String!) {
+        getTwitchUserInfo(userId: $userId) {
+            id 
+            login
+            display_name
+            profile_image_url
+        }
+    }   
+`;
+
+const query6 = gql`
+    query($userId: String!) {
+        getYoutubeUserInfo(userId: $userId) {
+            title
+            thumbnails {
+                medium {
+                    url
+                    width
+                    height
+                }
+            }
+        }
+    }
+`;
+
 const mutation = gql`
     mutation($userId: String!) {
         deleteTwitchSession(userId: $userId)
@@ -55,27 +81,35 @@ const rowStyle = {
     marginBottom: "4rem",
 };
 
-const Title = styled.h2`
-    color: var(--silver)
-`;
-
 const Account = () => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
     const {data: twitchAccount} = useQuery(query);
     
-    const { data, refetch: refetchTwitchUser} = useQuery(query2, {
+    const { refetch: refetchTwitchUser} = useQuery(query2, {
         variables: { 
-        "userId": getCookie("userId")
+            "userId": getCookie("userId")
         }
     })
 
-    const { data: youtubeLink, loading: loading3 } = useQuery(query3);
+    const { data: youtubeLink} = useQuery(query3);
     
-    const { data: youtubeUser, refetch: refetchYoutubeUser, loading: loading4 } = useQuery(query4, { 
+    const { refetch: refetchYoutubeUser} = useQuery(query4, { 
         variables: { 
-        "userId": getCookie("userId")
+            "userId": getCookie("userId")
+        }
+    })
+    
+    const { data: twUserInfo } = useQuery(query5, { 
+        variables: { 
+            "userId": getCookie("userId")
+        }
+    })
+
+    const { data: ytUserInfo } = useQuery(query6, { 
+        variables: { 
+            "userId": getCookie("userId")
         }
     })
 
@@ -88,11 +122,23 @@ const Account = () => {
             <Container fluid >
                 <Row style={rowStyle}>
                     <Col md={{ span: 0, offset: 8 }}>
-                        <Title>Link Accounts</Title>
+                        <div className="white">
+                            <h2>Link Accounts</h2>
+                        </div>
                     </Col>
                 </Row>
                 {getCookie("twitchAccessToken") ?
                     <Row style={rowStyle}>
+                        {twUserInfo ? 
+                            <Col md={{ span: 0, offset: 8}} >
+                                <div className="white">
+                                    Account: 
+                                    {twUserInfo.getTwitchUserInfo?.display_name}  
+                                    <img src={twUserInfo.getTwitchUserInfo?.profile_image_url} width="40px" height="40px"/>
+                                </div>
+                            </Col>
+                        : 
+                            null}
                         <Col md={{ span: 0, offset: 8 }}>
                         <a className="btn btn-dark" href="#" onClick={evt => {
                             evt.preventDefault();
@@ -112,6 +158,16 @@ const Account = () => {
                 }
                 {getCookie("youtubeAccessToken") ? 
                     <Row style={rowStyle}>
+                        {ytUserInfo ? 
+                            <Col md={{ span: 0, offset: 8}} >
+                                <div className="white">
+                                    Account: 
+                                    {ytUserInfo.getYoutubeUserInfo?.title}  
+                                    <img src={ytUserInfo.getYoutubeUserInfo?.thumbnails.medium.url} width="40px" height="40px"/>
+                                </div>
+                            </Col>
+                        : 
+                            null}
                         <Col md={{ span: 0, offset: 8 }}>
                             <a className="btn btn-dark" href="#" onClick={evt => {
                             evt.preventDefault();

@@ -1,11 +1,9 @@
 import React from "react";
-import ReactPlayer from "react-player/youtube"
+import ReactPlayer from "react-player/youtube";
 
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-
-
 
 const YoutubeStream = () => {
 

@@ -12,13 +12,13 @@ const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
-const YOUTUBE_CLIENT_ID1 = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET1 = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
-const REDIRECT_URI_LANDING1 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
-
-const YOUTUBE_CLIENT_ID2 = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjhqmmtbd2vqde1ulp2mn7csd5.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET2 = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
+const YOUTUBE_CLIENT_ID2 = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET2 = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
 const REDIRECT_URI_LANDING2 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
+
+const YOUTUBE_CLIENT_ID3 = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjhqmmtbd2vqde1ulp2mn7csd5.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET3 = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
+const REDIRECT_URI_LANDING3 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
 const setupRoutes = app => {
   
@@ -82,6 +82,27 @@ const setupRoutes = app => {
       return res.json({
         response: flattenedResponse
       })
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  // Get Youtube user info (from youtube)
+  app.post('/youtube/user', async (req, res, next) => {
+    try {
+
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response = await got.get('https://www.googleapis.com/youtube/v3/channels'
+      + '?part=snippet'
+      + '&mine=true', {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token
+        }
+      })
+
+      return res.json(JSON.parse(response.body).items[0].snippet);
     } catch (e) {
       return next(e);
     }

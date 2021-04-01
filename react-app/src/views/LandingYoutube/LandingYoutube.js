@@ -53,7 +53,7 @@ const LandingYoutube = () => {
         <div>
             <CustomNavBar/>
             <div  >
-                <h2 style={{   position: "fixed",
+                <h2 className="white" style={{   position: "fixed",
                             top: "42%",
                             left: "50%",
                             transform: "translate(-50%, -50%)" 

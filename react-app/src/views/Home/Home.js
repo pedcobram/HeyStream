@@ -1,26 +1,13 @@
 import React, { useState } from "react";
-import { useQuery, gql } from "@apollo/client"
-import styled from "styled-components";
+import { useQuery, gql } from "@apollo/client";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import TwitchVideosNoLogin from "#root/components/TwitchVideosNoLogin";
 import YoutubeVideosNoLogin from "#root/components/YoutubeVideosNoLogin";
 
-const Filters = styled.div`
-    display: flex;
-    justify-content: left;
-    width: 100%;
-    padding-left: 4rem;
-`;
-
-const Filter = styled.div`
-    padding-right: 1rem;
-`;
-
-const FilterText = styled.h3`
-    color: var(--silver);
-    padding-right: 1rem;
-`;
+import Filters from "#root/components/shared/Filters";
+import Filter from "#root/components/shared/Filter";
+import FilterText from "#root/components/shared/FilterText";
 
 const youtubeQuery = gql`
     query {
@@ -68,16 +55,6 @@ const twitchQuery = gql`
         }
     }
 `;
-
-function extend(target) {
-    var sources = [].slice.call(arguments, 1);
-    sources.forEach(function (source) {
-        for (var prop in source) {
-            target[prop] = source[prop];
-        }
-    });
-    return target;
-}
 
 const Home = () => {
 

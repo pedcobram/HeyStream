@@ -28,6 +28,15 @@ export default class YoutubeService {
         return body;
     }
 
+    static async getYoutubeUserInfo({ userId }) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/user`, {
+            json: {
+                userId
+            }
+        }).json();
+        return body;
+    }
+
     static async fetchYoutubeUserByUserId({ userId }) {
         const body = await got.get(`${YOUTUBE_SERVICE_URI}/youtube/${userId}`).json();
         return body;

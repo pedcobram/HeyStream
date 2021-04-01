@@ -2,29 +2,47 @@ import React from "react";
 import Grid from 'react-css-grid'
 import { useHistory } from "react-router-dom";
 
-import getCookie from "../shared/functions/getCookie"
-import capitalize from "../shared/functions/capitalize"
-import kFormatter from "../shared/functions/kFormatter"
+import getCookie from "#root/components/shared/functions/getCookie"
+import capitalize from "#root/components/shared/functions/capitalize"
+import kFormatter from "#root/components/shared/functions/kFormatter"
 
-import SubText from "../shared/SubText"
-import Text from "../shared/Text"
-import Video from "../shared/Video"
+import SubText from "#root/components/shared/SubText"
+import Text from "#root/components/shared/Text"
+import Video from "#root/components/shared/Video"
+import PlatformText from "#root/components/shared/PlatformText";
 
 const MyTwitchStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    if(props.loading && !props.videos) return null;
+    if(props.loading && !props.videos) {
+        const loadingGif = require('../../images/loadingIcon.gif');
+        return (
+            <div className="wrapperImage">
+                <img className="centerImage" src={loadingGif} height="75px" width="75px"/>
+            </div>
+        );
+    };
+
+    if(!props.videos) {
+        return (
+            <div className="wrapperImage">
+                <PlatformText className="centerImage">There are no Twitch streamers live that you follow</PlatformText>
+            </div>
+        );
+    }
 
     return (
-        <Grid autoFlow='column'>  
-            {props.videos.map(v => ({...v, platform: 'Twitch'})).slice(0, props.visibleStreams).filter((video) => {
+        <Grid className="centered">  
+            {props.videos.map(v => ({...v, platform: 'Twitch'})).filter((video) => {
                     if(props.searchTerm == '') {
                         return video
-                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase()) {
+                    } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase() ||
+                    video.game_name.toLowerCase().includes(props.searchTerm.toLowerCase()) ||
+                    video.user_name.toLowerCase().includes(props.searchTerm.toLowerCase())) {
                         return video
                     }
-                }).map((data, idx) => (
+                }).slice(0, props.visibleStreams).map((data, idx) => (
                 <Video key={idx}>
                     <div className="container">
                         <a href={"/twitch/stream/{user}".replace('{user}', data?.user_name)}>

@@ -143,6 +143,14 @@ html, body, #app {
     justify-items: center;
 }
 
-#white {
+.white {
     color: var(--silver);
+}
+
+.wrapperImage {
+    text-align: center;
+}
+
+.centerImage {
+    display: inline-block;
 }

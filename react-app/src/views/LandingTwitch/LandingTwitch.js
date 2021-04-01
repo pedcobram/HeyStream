@@ -26,7 +26,6 @@ const LandingTwitch = () => {
     const session = useSelector(state => state.session);
     const sessionUserId = session?.id
     
-
     const urlParams = new URLSearchParams(window.location.search);
     const twitchCode = urlParams.get('code');
 
@@ -57,7 +56,7 @@ const LandingTwitch = () => {
         <div>
             <CustomNavBar/>
             <div  >
-                <h2 style={{   position: "fixed",
+                <h2 className="white" style={{   position: "fixed",
                             top: "42%",
                             left: "50%",
                             transform: "translate(-50%, -50%)" 

@@ -1,64 +1,38 @@
 import React from "react";
-import Grid from 'react-css-grid'
+import Grid from 'react-css-grid';
 import { useHistory } from "react-router-dom";
-import { useQuery, gql } from "@apollo/client";
-import styled from "styled-components";
 
-import getCookie from "../shared/functions/getCookie"
+import getCookie from "#root/components/shared/functions/getCookie";
+import PlatformText from "#root/components/shared/PlatformText";
 
-import YoutubeStream from "../YoutubeStream"
-
-const PlatformText = styled.h3`
-    color: var(--silver);
-    margin-top: 1rem;
-    padding-left: 2.5rem;
-`;
-
-const youtubeQuery = gql`
-    query($userId: String!) {
-        getYoutubeStreams(userId: $userId) {
-            response {
-                publishedAt
-                channelId
-                title
-                description
-                thumbnails {
-                    medium {
-                    url
-                    width
-                    height
-                    }
-                }
-                channelTitle
-                liveBroadcastContent
-                }
-            }
-    }
-`;
+import YoutubeStream from "#root/components/YoutubeStream";
 
 const MyYoutubeStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    const loadingGif = require('../../images/loadingIcon.gif');
+    if(props.loading && !props.videos) {
+        const loadingGif = require('../../images/loadingIcon.gif');
+        return (
+            <div className="wrapperImage">
+                <img className="centerImage" src={loadingGif} height="75px" width="75px"/>
+            </div>
+        );
+    };
 
-    const { data, loading } = useQuery(youtubeQuery, {
-        variables: { 
-            userId: getCookie("userId")
-        }
-    });
-
-    console.log(data?.getYoutubeStreams.response[0].channelTitle)
+    if(!props.videos) {
+        return (
+            <div className="wrapperImage">
+                <PlatformText className="centerImage">There are no YouTube streamers live that you follow</PlatformText>
+            </div>
+        );
+    }
 
     return (
         <Grid className="centered">
-            {data?.getYoutubeStreams.response.length == 0 ? 
-                <PlatformText>There are no YouTube streamers live that you follow</PlatformText>
-            :
-                data?.getYoutubeStreams.response.map((item, idx) => (
-                    <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} />
-                ))
-            }
+            {props.videos?.getYoutubeStreams.response.slice(0, props.visibleStreams).map((item, idx) => (
+                <YoutubeStream key={idx} videos={item} searchTerm={props.searchTerm} visibleStreams={props.visibleStreams} />
+            ))}
         </Grid>
     )
 };

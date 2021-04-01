@@ -33,6 +33,15 @@ export default class TwitchService {
         return body;
     }
 
+    static async getTwitchUserInfo({ userId }) {
+        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/user`, {
+            json: {
+                userId
+            }
+        }).json();
+        return body.data[0];
+    }
+
     static async fetchTwitchUserByUserId({ userId }) {
         const body = await got.get(`${TWITCH_SERVICE_URI}/twitch/${userId}`).json();
         return body;

@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import styled from "styled-components";
 import { useQuery, gql } from "@apollo/client";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 
-import MyTwitchStreams from '#root/components/MyTwitchStreams'
-import MyYoutubeStreams from '#root/components/MyYoutubeStreams'
+import MyTwitchStreams from '#root/components/MyTwitchStreams';
+import MyYoutubeStreams from '#root/components/MyYoutubeStreams';
 
 import getCookie from "#root/components/shared/functions/getCookie";
+
+import Filters from "#root/components/shared/Filters";
+import Filter from "#root/components/shared/Filter";
+import FilterText from "#root/components/shared/FilterText";
+import PlatformText from "#root/components/shared/PlatformText";
 
 const twitchQuery = gql`
     query($userId: String!) {
@@ -30,38 +33,48 @@ const twitchQuery = gql`
     }
 `;
 
-const Filters = styled.div`
-    display: flex;
-    justify-content: left;
-    width: 100%;
-    padding-left: 4rem;
-`;
-
-const Filter = styled.div`
-    padding-right: 1rem;
-`;
-
-const FilterText = styled.h3`
-    color: var(--silver);
-    padding-right: 1rem;
-`;
-
-const PlatformText = styled.h3`
-    color: var(--silver);
-    margin-top: 1rem;
-    padding-left: 2.5rem;
+const youtubeQuery = gql`
+    query($userId: String!) {
+        getYoutubeStreams(userId: $userId) {
+            response {
+                publishedAt
+                channelId
+                title
+                description
+                thumbnails {
+                    medium {
+                    url
+                    width
+                    height
+                    }
+                }
+                channelTitle
+                liveBroadcastContent
+                }
+            }
+    }
 `;
 
 const MyStreams = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [visibleStreams, setVisibleStreams] = useState(10);
+    const [visibleTwitchStreams, setVisibleTwitchStreams] = useState(5);
+    const [visibleYoutubeStreams, setVisibleYoutubeStreams] = useState(5);
 
-    const { data, loading } = useQuery(twitchQuery, {
+    const { data: twData, loading: twLoading } = useQuery(twitchQuery, {
         variables: { 
             userId: getCookie("userId")
         },
+    }); 
+
+    const { data: ytData, loading: ytLoading } = useQuery(youtubeQuery, {
+        variables: { 
+            userId: getCookie("userId")
+        }
     });
+
+    var twitchDataLen = twData?.getTwitchStreams.length;
+    var youtubeDataLen = ytData?.getYoutubeStreams.response.length;
 
     function updateState(searchTerm, param) {
         if(searchTerm == param) {
@@ -71,15 +84,21 @@ const MyStreams = () => {
         }
     }
 
-    const clickSeeMore = () => {
-        setVisibleStreams(dataLen);
+    const clickSeeMoreTwitch = () => {
+        setVisibleTwitchStreams(twitchDataLen);
     }
 
-    const clickSeeLess = () => {
-        setVisibleStreams(10);
+    const clickSeeLessTwitch = () => {
+        setVisibleTwitchStreams(5);
     }
 
-    var dataLen = data?.getTwitchStreams.length;
+    const clickSeeMoreYoutube = () => {
+        setVisibleYoutubeStreams(youtubeDataLen);
+    }
+
+    const clickSeeLessYoutube = () => {
+        setVisibleYoutubeStreams(5);
+    }
 
     return (
     <div>
@@ -96,22 +115,43 @@ const MyStreams = () => {
                     updateState(searchTerm, 'YouTube')
                 }}>YouTube</button>
             </Filter>
+            <Filter>
+                <input type="text" onChange={e => setSearchTerm(e.target.value)} placeholder="Search by name or game..."/>
+            </Filter>
         </Filters>
         <div className="right">
-            {visibleStreams == dataLen ?
-                <button className="btn btn-dark" type="button" onClick={clickSeeLess}>
-                    See less Twitch Streams
-                </button>
+            {twData ?
+                visibleTwitchStreams == twitchDataLen ?
+                    <button className="btn btn-dark" type="button" onClick={clickSeeLessTwitch}>
+                        See less Twitch Streams
+                    </button>
+                :
+                    <button className="btn btn-dark" type="button" onClick={clickSeeMoreTwitch}> 
+                        See more Twitch Streams
+                    </button>
             :
-                <button className="btn btn-dark" type="button" onClick={clickSeeMore}> 
-                    See more Twitch Streams
-                </button>
+                null                
             }
         </div>
         <PlatformText>Twitch Streams: </PlatformText>
-        <MyTwitchStreams searchTerm={searchTerm} visibleStreams={visibleStreams} videos={data?.getTwitchStreams} loading={loading}/>
+        <MyTwitchStreams searchTerm={searchTerm} visibleStreams={visibleTwitchStreams} videos={twData?.getTwitchStreams} loading={twLoading}/>
+        <br/>
+        <div className="right">
+            {ytData ? 
+                visibleYoutubeStreams == youtubeDataLen ?
+                    <button className="btn btn-dark" type="button" onClick={clickSeeLessYoutube}>
+                        See less Youtube Streams
+                    </button>
+                :
+                    <button className="btn btn-dark" type="button" onClick={clickSeeMoreYoutube}> 
+                        See more Youtube Streams
+                    </button>
+            :
+                null
+            }
+        </div>
         <PlatformText>Youtube Streams: </PlatformText>
-        <MyYoutubeStreams searchTerm={searchTerm}/>
+        <MyYoutubeStreams searchTerm={searchTerm} visibleStreams={visibleYoutubeStreams} videos={ytData} loading={ytLoading}/>
     </div>
     );
 }

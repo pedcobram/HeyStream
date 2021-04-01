@@ -1,7 +1,7 @@
 import React from "react";
-import ReactPlayer from "react-player/twitch"
+import ReactPlayer from "react-player/twitch";
 
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 

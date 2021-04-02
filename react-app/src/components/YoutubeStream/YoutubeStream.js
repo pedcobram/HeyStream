@@ -14,6 +14,7 @@ const YoutubeStream = (props)  => {
     return (
         <div>
             {array.map(v => ({...v, platform: 'YouTube'})).filter((video) => {
+                console.log(video)
                     if(props.searchTerm == '') {
                         return video
                     } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase() || 
@@ -22,18 +23,22 @@ const YoutubeStream = (props)  => {
                     }
                 }).map((video, idx) => (
                 <Video key={idx}>
-                    <div className="container">
-                        <a href={"/youtube/stream/{user}".replace('{user}', video.channelId)}>
-                            <img src={video.thumbnails.medium.url} />
-                        </a>
-                        <div className="bottom-right">
-                            <p className="live">
-                                {capitalize(video.liveBroadcastContent)}
-                            </p>
+                    {video.items.slice(0,1).map((item) => (
+                        <div>
+                            <div className="container">
+                                <a href={"/youtube/stream/{user}".replace('{user}', item.id.videoId)}>
+                                    <img src={item.snippet.thumbnails.medium.url} />
+                                </a>
+                                <div className="bottom-right">
+                                    <p className="live">
+                                        {capitalize(item.snippet.liveBroadcastContent)}
+                                    </p>
+                                </div>
+                            </div>
+                            <Text title={item.snippet.title}>{item.snippet.title}</Text>
+                            <SubText>{item.snippet.channelTitle}</SubText>
                         </div>
-                    </div>
-                    <Text title={video.title}>{video.title}</Text>
-                    <SubText>{video.channelTitle}</SubText>
+                    ))}
                 </Video>
             ))}
         </div>

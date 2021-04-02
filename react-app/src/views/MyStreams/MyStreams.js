@@ -37,21 +37,28 @@ const youtubeQuery = gql`
     query($userId: String!) {
         getYoutubeStreams(userId: $userId) {
             response {
-                publishedAt
-                channelId
-                title
-                description
-                thumbnails {
-                    medium {
-                    url
-                    width
-                    height
+                items {
+                  id {
+                    videoId
+                  }
+                  snippet {
+                    publishedAt
+                    channelId
+                    title
+                    description
+                    thumbnails {
+                      medium {
+                        url
+                        width
+                        height
+                      }
                     }
-                }
-                channelTitle
-                liveBroadcastContent
+                    channelTitle
+                    liveBroadcastContent
+                  }
                 }
             }
+        }
     }
 `;
 

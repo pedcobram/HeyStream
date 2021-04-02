@@ -28,7 +28,7 @@ const checkChannelLive = async (channelId, access_token) => {
         }
       });
       
-    return JSON.parse(response.body).items.length > 0 ? JSON.parse(response.body).items[0].snippet : [];
+    return JSON.parse(response.body).items.length > 0 ? JSON.parse(response.body) : [];
   } else {
     return null;
   }

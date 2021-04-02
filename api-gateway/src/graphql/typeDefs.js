@@ -114,8 +114,17 @@ const typeDefs = gql`
         data: [TwitchFollowedData!]!
     }
 
+    type ytChannelItem{
+        id: ytID
+        snippet: SnippetStream
+    }
+
+    type ItemYoutubeChannel {
+        items: [ytChannelItem]
+    }
+
     type YoutubeStreams {
-        response: [SnippetStream]
+        response: [ItemYoutubeChannel]
     }
 
     type TwitchUserInfo {

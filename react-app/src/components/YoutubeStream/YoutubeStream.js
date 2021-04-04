@@ -14,11 +14,10 @@ const YoutubeStream = (props)  => {
     return (
         <div>
             {array.map(v => ({...v, platform: 'YouTube'})).filter((video) => {
-                console.log(video)
                     if(props.searchTerm == '') {
                         return video
                     } else if (video.platform.toLowerCase() == props.searchTerm.toLowerCase() || 
-                    video.channelTitle.toLowerCase().includes(props.searchTerm.toLowerCase())) {
+                    video.items[0].snippet.channelTitle.toLowerCase().includes(props.searchTerm.toLowerCase())) {
                         return video
                     }
                 }).map((video, idx) => (

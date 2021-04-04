@@ -16,6 +16,12 @@ const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k70
 
 const setupRoutes = app => {
 
+  app.get("/twitch/hello", async (req, res, next) => {
+   return res.json({
+     hello: "Hello :)"
+   }) 
+  })
+
   //Get parsed list of live users from all the streamers the users follows
   app.post("/twitch/streams", async (req, res, next) => {
     try {

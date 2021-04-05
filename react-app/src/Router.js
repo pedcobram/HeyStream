@@ -5,9 +5,11 @@ import Home from "./views/Home";
 import Account from "./views/Account";
 import LandingTwitch from './views/LandingTwitch';
 import LandingYoutube from './views/LandingYoutube';
-import TwitchStream from './views/TwitchStream'
-import YoutubeStream from './views/YoutubeStream'
-import MyStreams from './views/MyStreams'
+import TwitchStream from './views/TwitchStream';
+import YoutubeStream from './views/YoutubeStream';
+import MyStreams from './views/MyStreams';
+import TwitchVods from './views/TwitchVods';
+import TwitchVod from './views/TwitchVod';
 
 function Router() {
     return (
@@ -23,6 +25,8 @@ function Router() {
             <Switch>
                 <Route exact path="/twitch/stream/:user" children={<TwitchStream/>}/>
                 <Route exact path="/youtube/stream/:videoId" children={<YoutubeStream/>}/>
+                <Route exact path="/twitch/vod/:vodId" children={<TwitchVod/>}/>
+                <Route exact path="/twitch/vods/:user" children={<TwitchVods/>}/>
             </Switch>
         </div>
     );

@@ -12,12 +12,18 @@ const TwitchStream = () => {
     return (
         <div>
             <CustomNavBar/>
-            <div className="center">
-                <div id="box">
-                    <ReactPlayer wrapper="div" width="1280px" height="720px" playing="true" url={"https://www.twitch.tv/{user}".replace('{user}', user)} align="left"/>
+            <div>
+                <div className="center">
+                    <div id="box">
+                        <ReactPlayer wrapper="div" width="1280px" height="720px" playing="true" url={"https://www.twitch.tv/{user}".replace('{user}', user)} align="left"/>
+                    </div>
+                    <div id="box">
+                        <iframe src={"https://www.twitch.tv/embed/{user}/chat?parent=localhost&darkpopout".replace("{user}", user)} height="720px" width="120%" align="right" />
+                    </div>
                 </div>
-                <div id="box">
-                    <iframe src={"https://www.twitch.tv/embed/{user}/chat?parent=localhost&darkpopout".replace("{user}", user)} height="720px" width="120%" align="right" />
+                <br/>
+                <div className="center">
+                    <a id="box" className="btn btn-dark" href={"/twitch/vods/" + user}>Go to VoDs</a>
                 </div>
             </div>
         </div>

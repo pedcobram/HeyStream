@@ -15,12 +15,48 @@ const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvv
 const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
 
 const setupRoutes = app => {
-
+  // Test route for deployment
   app.get("/twitch/hello", async (req, res, next) => {
    return res.json({
      hello: "Hello :)"
    }) 
   })
+
+  //Returns a list of vods (videos on demand) from the given streamer
+  app.post("/twitch/streams/vods", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response1 = await got.get('https://api.twitch.tv/helix/users'
+      + '?login=' + req.body.loginName, {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      const streamerId = JSON.parse(response1.body).data[0].id;
+
+      const response2 = await got.get('https://api.twitch.tv/helix/videos'
+      + '?user_id=' + streamerId
+      + '&first=50'
+      + '&period=all'
+      + '&type=archive', {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }});
+
+      const vods = JSON.parse(response2.body)
+
+      return res.json({
+        vods 
+      })
+    } catch (e) {
+      return next(e);
+    }
+   })
 
   //Get parsed list of live users from all the streamers the users follows
   app.post("/twitch/streams", async (req, res, next) => {

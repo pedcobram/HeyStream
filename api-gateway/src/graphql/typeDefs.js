@@ -149,6 +149,26 @@ const typeDefs = gql`
         deleteYoutubeSession(userId: String!): Boolean!
     }
 
+    type TwitchVod {
+        id: String
+        user_id: String
+        user_login: String
+        user_name: String
+        title: String
+        description: String
+        created_at: Date
+        published_at: Date
+        url: String
+        thumbnail_url: String
+        viewer_count: String
+        duration: String
+    }
+
+    type TwitchVods {
+        data: [TwitchVod]
+        pagination: String
+    }
+
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
@@ -164,6 +184,7 @@ const typeDefs = gql`
         getYoutubeStreams(userId: String!): YoutubeStreams!
         getTwitchUserInfo(userId: String!): TwitchUserInfo!
         getYoutubeUserInfo(userId: String!): YoutubeUserInfo!
+        getTwitchVods(userId: String!, loginName: String!): TwitchVods
     }
 `;
 

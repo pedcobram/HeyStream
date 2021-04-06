@@ -87,6 +87,31 @@ const setupRoutes = app => {
     }
   });
 
+  //
+  app.post('/youtube/stream/channelId', async (req, res, next) => {
+    try {
+      
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+      
+      const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
+      + '?part=id,snippet'
+      + '&id=' + req.body.videoId, {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token
+        }
+      });
+
+      const channelId = JSON.parse(response.body).items[0].snippet.channelId;
+
+      return res.json({
+        channelId
+      })
+    } catch (e) {
+      return next(e);
+    }
+  });
+
   // Get Youtube user info (from youtube)
   app.post('/youtube/user', async (req, res, next) => {
     try {

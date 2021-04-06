@@ -7,9 +7,7 @@ import SubText from "#root/components/shared/SubText";
 import Text from "#root/components/shared/Text";
 import Video from "#root/components/shared/Video";
 
-import capitalize from "#root/components/shared/functions/capitalize";
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-
 import getCookie from "#root/components/shared/functions/getCookie";
 
 const query = gql`
@@ -47,8 +45,6 @@ const TwitchVods = () => {
     }); 
 
     if (loading) return null
-
-    console.log(data?.getTwitchVods)
 
     return (
         <div>

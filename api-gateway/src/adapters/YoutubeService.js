@@ -9,6 +9,16 @@ export default class YoutubeService {
         return body;
     }
 
+    static async getYoutubeChannelId({ userId, videoId }) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/stream/channelId`, {
+            json: {
+                userId,
+                videoId
+            }
+        });
+        return JSON.parse(body.body);
+    }
+
     static async YoutubeLinkAccountLanding({ code, userId }) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/link`, {
             json: {

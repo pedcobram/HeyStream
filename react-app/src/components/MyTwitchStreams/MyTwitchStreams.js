@@ -15,8 +15,6 @@ const MyTwitchStreams = (props)  => {
 
     if (!getCookie("userId")) useHistory().push("/");
 
-    console.log(props.videos)
-
     if(props.loading && !props.videos) {
         const loadingGif = require('../../images/loadingIcon.gif');
         return (

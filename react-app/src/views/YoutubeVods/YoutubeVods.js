@@ -7,7 +7,6 @@ import SubText from "#root/components/shared/SubText";
 import Text from "#root/components/shared/Text";
 import Video from "#root/components/shared/Video";
 
-import capitalize from "#root/components/shared/functions/capitalize";
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 
 import getCookie from "#root/components/shared/functions/getCookie";
@@ -46,48 +45,38 @@ const query = gql`
 
 const TwitchVods = () => {
 
-    const {user} = useParams();
+    const { channelId } = useParams();
 
     const { data, loading, error } = useQuery(query, {
         variables: { 
             userId: getCookie("userId"),
-            loginName: user
+            channelId: channelId
         },
         errorPolicy: "all"
     }); 
 
-    if (loading) return null
-
-    console.log(data?.getYoutubeVods)
-
-    /*
-    <Grid className="centered">  
-        {data?.getTwitchVods.data.map((vod, idx) => (
-            <Video key={idx}>
-                <div className="container">
-                    <a href={'/twitch/vod/' + vod.id} >
-                        {vod.thumbnail_url ? 
-                            <img src={vod.thumbnail_url.replace('%{width}', 320).replace('%{height}', 180)} width="320px" height="180px"/>
-                        :
-                            <img src="" width="320px" height="180px"/>
-                        }
-                    </a>
-                    <div className="bottom-left">
-                        <div className="viewers">
-                            {vod.duration}
-                        </div>
-                    </div>
-                </div>
-                <Text title={vod.title}>{vod.title}</Text>
-                <SubText>{vod.user_name}</SubText>
-            </Video>
-        ))}
-    </Grid>
-    */
+    if (loading) return null;
 
     return (
         <div>
             <CustomNavBar/>
+            <Grid className="centered">  
+                {data?.getYoutubeVods.items.map((vod, idx) => (
+                    <Video key={idx}>
+                        <div className="container">
+                            <a href={'/youtube/vod/' + vod.id.videoId} >
+                                {vod.snippet.thumbnails ? 
+                                    <img src={vod.snippet.thumbnails.medium.url} width="320px" height="180px"/>
+                                :
+                                    <img src="" width="320px" height="180px"/>
+                                }
+                            </a>
+                        </div>
+                        <Text title={vod.snippet.title}>{vod.snippet.title}</Text>
+                        <SubText>{vod.snippet.channelTitle}</SubText>
+                    </Video>
+                ))}
+            </Grid>
             
         </div>
     );

@@ -185,6 +185,7 @@ const typeDefs = gql`
         getTwitchUserInfo(userId: String!): TwitchUserInfo!
         getYoutubeUserInfo(userId: String!): YoutubeUserInfo!
         getTwitchVods(userId: String!, loginName: String!): TwitchVods
+        getYoutubeVods(userId: String!, channelId: String!): YoutubeStream
     }
 `;
 

@@ -12,3 +12,4 @@ export { default as getYoutubeStreams} from "./getYoutubeStreams";
 export { default as getTwitchUserInfo} from "./getTwitchUserInfo";
 export { default as getYoutubeUserInfo} from "./getYoutubeUserInfo";
 export { default as getTwitchVods} from "./getTwitchVods";
+export { default as getYoutubeVods} from "./getYoutubeVods";

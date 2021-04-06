@@ -20,12 +20,22 @@ export default class YoutubeService {
     }
 
     static async getYoutubeStreams({ userId }) {
-        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams`, {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams/followed`, {
             json: {
                 userId
             }
         });
         return body;
+    }
+
+    static async getYoutubePastStreams({ userId, channelId }) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams/vods`, {
+            json: {
+                userId,
+                channelId
+            }
+        });
+        return JSON.parse(body.body).data;
     }
 
     static async getYoutubeUserInfo({ userId }) {
@@ -43,7 +53,7 @@ export default class YoutubeService {
     }
 
     static async getYoutubeVideosNoLogin() {
-        const body = await got.get(`${YOUTUBE_SERVICE_URI}/youtube/videos`).json();
+        const body = await got.get(`${YOUTUBE_SERVICE_URI}/youtube/streams/top`).json();
         return body;
     }
 

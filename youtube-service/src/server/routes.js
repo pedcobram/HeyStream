@@ -22,7 +22,7 @@ const REDIRECT_URI_LANDING3 = accessEnv("REDIRECT_URI", "http://localhost:7001/y
 
 const setupRoutes = app => {
   
-  app.post('/youtube/streams', async (req, res, next) => {
+  app.post('/youtube/streams/followed', async (req, res, next) => {
     try {
 
       const yt = await YouTube.findOne({ attributes: {}, where: {
@@ -108,52 +108,8 @@ const setupRoutes = app => {
     }
   });
 
-  // Get Youtube followed users by userId given in the POST body
-  app.post('/youtube/user/followed', async (req, res, next) => {
-    try {
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
-  
-      const response = await got.get('https://www.googleapis.com/youtube/v3/subscriptions'
-      + '?part=snippet'
-      + '&mine=true'
-      + '&maxResults=50'
-      + '&order=relevance', {
-        headers: {
-          'Authorization': 'Bearer ' + yt.access_token,
-        }
-      });
-  
-      return res.json(JSON.parse(response.body));
-    } catch (e) {
-      return next(e);
-    }
-  });
-
-  app.post("/youtube/stream", async (req, res, next) => {
-    try {
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
-  
-      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
-      + '?part=snippet'
-      + '&channelId=' + req.body.channelId
-      + '&type=video'
-      + '&eventType=live'
-      + '&order=relevance', {
-        headers: {
-          'Authorization': 'Bearer ' + yt.access_token,
-        }
-      });
-  
-      return res.json(JSON.parse(response.body));
-    } catch (e) {
-      return next(e);
-    }
-  });
-
   // Get youtube top 10 streams for the home page
-  app.get("/youtube/videos", async (req, res, next) => {
+  app.get("/youtube/streams/top", async (req, res, next) => {
     try {
       
       const youtubeAdmin = await User.findOne({ attributes: {}, where: {
@@ -271,6 +227,35 @@ const setupRoutes = app => {
 
       return res.json({
         message: "Youtube token updated correctly!"
+      });
+    } catch (e) {
+      return next(e);
+    }
+  });
+
+  // Get previous finished streams from youtube
+  app.post("/youtube/streams/vods", async (req, res, next) => {
+    try {
+
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const accessToken = yt.access_token;
+
+      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
+      + '?part=id,snippet'
+      + '&channelId=' + req.body.channelId
+      + '&type=video'
+      + '&eventType=completed'
+      + '&maxResults=50'
+      + '&order=date', {
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        }
+      });
+
+      return res.json({
+        data: JSON.parse(response.body)
       });
     } catch (e) {
       return next(e);

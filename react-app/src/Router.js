@@ -10,6 +10,7 @@ import YoutubeStream from './views/YoutubeStream';
 import MyStreams from './views/MyStreams';
 import TwitchVods from './views/TwitchVods';
 import TwitchVod from './views/TwitchVod';
+import YoutubeVods from './views/YoutubeVods';
 
 function Router() {
     return (
@@ -27,6 +28,7 @@ function Router() {
                 <Route exact path="/youtube/stream/:videoId" children={<YoutubeStream/>}/>
                 <Route exact path="/twitch/vod/:vodId" children={<TwitchVod/>}/>
                 <Route exact path="/twitch/vods/:user" children={<TwitchVods/>}/>
+                <Route exact path="/youtube/vods/:channelId" children={<YoutubeVods/>}/>
             </Switch>
         </div>
     );

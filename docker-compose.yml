@@ -42,6 +42,17 @@ services:
     volumes:
       - ./twitch-service:/opt/app 
 
+  python-service:
+    build: "./python-service"
+    depends_on: 
+      - db
+    environment: 
+      - DB_URI=mysql://root:password@db/db?charset=UTF8
+    ports:
+      - 7104:7104
+    volumes:
+      - ./python-service:/opt/app
+
   db:
     environment: 
       - MYSQL_ROOT_PASSWORD=password

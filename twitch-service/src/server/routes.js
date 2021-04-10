@@ -1,4 +1,4 @@
-import { Twitch, User } from "#root/db/models";
+import { Twitch, User, TwitchChat } from "#root/db/models";
 import got from "got";
 
 import accessEnv from "#root/helpers/accessEnv"
@@ -14,13 +14,114 @@ const TWITCH_CLIENT_SECRET2 = accessEnv("TWITCH_CLIENT_SECRET", "ebn5zvav8txjcuj
 const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
 const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
 
+const parseChat = async (videoId, access_token, cursor) => {
+  const Null = null;
+  if (cursor == null) return {Null, Null};
+
+  const response = await got.get('https://api.twitch.tv/v5/videos/' + videoId + '/comments'
+  + '?cursor=' + cursor
+  + '&limit=100', {
+        headers: {
+          'Authorization': 'Bearer ' + access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }});
+
+  const body = JSON.parse(response.body);
+
+  var cursor = body._next === undefined ? null : body._next
+
+  var resArray = []
+  for (const item of body.comments) {
+    resArray.push({
+      "timestamp": item.created_at, 
+      "username": item.commenter.name, 
+      "message": item.message.body})
+  }
+
+  return {resArray, cursor};
+};
+
 const setupRoutes = app => {
   // Test route for deployment
   app.get("/twitch/hello", async (req, res, next) => {
    return res.json({
      hello: "Hello :)"
    }) 
-  })
+  });
+
+  app.post("/twitch/vod/chat", async (req, res, next) => {
+    try {
+
+      var array = [];
+      var pagination = "";
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      var i = 0
+      while(i < 200) {
+        const {resArray, cursor} = await parseChat(req.body.videoId, twitchUser.access_token, pagination);
+        pagination = cursor
+        array.push(resArray)
+        i++
+      }
+
+      var responseArray = [].concat.apply([], array);
+
+      const twc = await TwitchChat.findOrCreate({
+        where: {
+          videoId: req.body.videoId,
+        },
+        defaults: {
+          id: generateUUID(),
+          chat: JSON.stringify(responseArray)
+        }    
+      })
+      
+      return res.json({
+        "data": twc
+      });
+    } catch (e) {
+      return next(e);
+    }
+   });
+
+  //
+  app.post("/twitch/vod/chat/pagination", async (req, res, next) => {
+    try {
+      var array = [];
+      var pagination = "";
+      
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});      
+      
+      var i = 0
+      while(true) {
+        const response = await got.get('https://api.twitch.tv/v5/videos/' + req.body.videoId + '/comments'
+        + '?cursor=' + pagination, {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+        }});
+
+        array.push({ "cursor": pagination })
+        pagination = JSON.parse(response.body)._next
+
+        if(pagination == undefined || pagination == null) break;
+
+        i++
+        console.log(i)
+      }
+
+      var responseArray = [].concat.apply([], array);
+      
+      return res.json({
+        "data": responseArray
+      });
+    } catch (e) {
+      return next(e);
+    }
+  });
 
   //Returns a list of vods (videos on demand) from the given streamer
   app.post("/twitch/streams/vods", async (req, res, next) => {

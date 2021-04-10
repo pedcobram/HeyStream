@@ -16,7 +16,7 @@ const TwitchVod = () => {
             <CustomNavBar/>
             <div className="center">
                 <div id="box">
-                    <ReactPlayer wrapper="div" width="1280px" height="720px" controls={true} playing={true} url={"https://www.twitch.tv/videos/{vodId}".replace('{vodId}', vodId)} align="left"/>
+                    <ReactPlayer wrapper="div" onProgress={playedSeconds => console.log(playedSeconds)} width="1280px" height="720px" controls={true} playing={true} url={"https://www.twitch.tv/videos/{vodId}".replace('{vodId}', vodId)} align="left"/>
                 </div>
             </div>
         </div>

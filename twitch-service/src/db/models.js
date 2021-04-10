@@ -131,3 +131,31 @@ Twitch.init(
         createdAt: false
     }
 );
+
+export class TwitchChat extends Model {}
+TwitchChat.init(
+    {
+        id: {
+            allowNull: false,
+            primaryKey: true,
+            type: DataTypes.UUID
+        },
+        videoId: {
+            allowNull: false,
+            type: DataTypes.STRING,
+            unique: true
+        },
+        chat: {
+            allowNull: true,
+            type: DataTypes.STRING
+        }
+    },
+    {
+        modelName: "twitchChats",
+        paranoid: false,
+        sequelize,
+        updatedAt: false,
+        expiresAt: false,
+        createdAt: false
+    }
+);

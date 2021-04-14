@@ -5,41 +5,15 @@ import accessEnv from "#root/helpers/accessEnv"
 import generateUUID from "#root/helpers/generateUUID";
 import checkChannelLive from "#root/helpers/checkChannelLive";
 import parseFollowedChannelsPage from "#root/helpers/parseFollowedChannelsPage";
+import parseChat from "#root/helpers/parseChat";
 
-const TWITCH_CLIENT_ID2 = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
+const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/twitch/landing");
-const TWITCH_CLIENT_SECRET2 = accessEnv("TWITCH_CLIENT_SECRET", "ebn5zvav8txjcujnrfphv8k9fy9hme");
+const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "ebn5zvav8txjcujnrfphv8k9fy9hme");
 
-const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
-const TWITCH_CLIENT_SECRET = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
-
-const parseChat = async (videoId, access_token, cursor) => {
-  const Null = null;
-  if (cursor == null) return {Null, Null};
-
-  const response = await got.get('https://api.twitch.tv/v5/videos/' + videoId + '/comments'
-  + '?cursor=' + cursor
-  + '&limit=100', {
-        headers: {
-          'Authorization': 'Bearer ' + access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-      }});
-
-  const body = JSON.parse(response.body);
-
-  var cursor = body._next === undefined ? null : body._next
-
-  var resArray = []
-  for (const item of body.comments) {
-    resArray.push({
-      "timestamp": item.created_at, 
-      "username": item.commenter.name, 
-      "message": item.message.body})
-  }
-
-  return {resArray, cursor};
-};
+const TWITCH_CLIENT_ID1 = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
+const TWITCH_CLIENT_SECRET1 = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
 
 const setupRoutes = app => {
   // Test route for deployment
@@ -149,15 +123,13 @@ const setupRoutes = app => {
           'Client-Id': TWITCH_CLIENT_ID
       }});
 
-      const vods = JSON.parse(response2.body)
-
       return res.json({
-        vods 
+        vods: JSON.parse(response2.body)
       })
     } catch (e) {
       return next(e);
     }
-   })
+   });
 
   //Get parsed list of live users from all the streamers the users follows
   app.post("/twitch/streams", async (req, res, next) => {

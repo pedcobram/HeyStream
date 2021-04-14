@@ -4,8 +4,8 @@ import qs from 'qs';
 import { User, YouTube } from "#root/db/models";
 import accessEnv from "#root/helpers/accessEnv"
 
-const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "172700488858-a6npf1l2m815lppv6oc7cunah030mccg.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqXs3XNo74owZJ");
+const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
 
 function refreshYoutubeToken() {
     (async () => {

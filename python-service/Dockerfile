@@ -1,4 +1,6 @@
-FROM python:3.9-alpine
+FROM python:3.9-buster
+
+#RUN apk add build-base
 
 COPY . /opt/app
 WORKDIR /opt/app

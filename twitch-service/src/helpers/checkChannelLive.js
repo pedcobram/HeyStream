@@ -2,7 +2,7 @@ import got from "got";
 
 import accessEnv from "#root/helpers/accessEnv"
 
-const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
+const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
 
 const checkChannelLive = async (channelArray, access_token) => {
   
@@ -29,7 +29,7 @@ const checkChannelLive = async (channelArray, access_token) => {
             'Client-Id': TWITCH_CLIENT_ID
           }
     });
-  
+
     if(JSON.parse(response.body).data.length == 0) return null;
     return JSON.parse(response.body).data;
 }

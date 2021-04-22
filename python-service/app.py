@@ -1,6 +1,7 @@
 import twitch
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, reqparse
+from chat_downloader import ChatDownloader 
 
 app = Flask(__name__)
 api = Api(app)
@@ -16,13 +17,12 @@ class getTwitchVodChat(Resource):
         created = []
         msg = []
 
-        helix = twitch.Helix(client_id, client_secret, use_cache=True)
-        for comment in helix.video(980289023).comments:
-            created.append(comment.created_at)
+        url = 'https://www.youtube.com/watch?v=bDhC6JfS1q0'
+        chat = ChatDownloader().get_chat(url)       # create a generator
+        for message in chat:                        # iterate over messages
+            print(chat.format(message))             # print the formatted message
         
         return ({
-            "created": created,
-            "message": msg
         })
 
     parser.add_argument('code')

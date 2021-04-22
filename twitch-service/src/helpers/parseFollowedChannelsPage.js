@@ -3,7 +3,7 @@ import got from "got";
 import accessEnv from "#root/helpers/accessEnv"
 import checkChannelLive from "#root/helpers/checkChannelLive"
 
-const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtvvfowe1b");
+const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
 
 const parseFollowedChannelsPage = async (myChannelId, pagination, access_token) => {
     var array2 = [];
@@ -16,7 +16,7 @@ const parseFollowedChannelsPage = async (myChannelId, pagination, access_token) 
             'Authorization': 'Bearer ' + access_token,
             'Client-Id': TWITCH_CLIENT_ID
     }});
-  
+    
     const resPagination = JSON.parse(response2.body).pagination.cursor;
   
     var channelArray2 = [];

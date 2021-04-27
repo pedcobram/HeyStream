@@ -19,6 +19,16 @@ export default class TwitchService {
         return body;
     }
 
+    static async getTwitchStreamClips({ userId, videoId }) {
+        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/vod/clips`, {
+            json: {
+                userId,
+                videoId
+            }
+        });
+        return body;
+    }
+
     static async getTwitchStreams({ userId }) {
         const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/streams`, {
             json: {

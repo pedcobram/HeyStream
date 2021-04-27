@@ -5,7 +5,6 @@ import accessEnv from "#root/helpers/accessEnv"
 import generateUUID from "#root/helpers/generateUUID";
 import checkChannelLive from "#root/helpers/checkChannelLive";
 import parseFollowedChannelsPage from "#root/helpers/parseFollowedChannelsPage";
-import parseChat from "#root/helpers/parseChat";
 
 const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
@@ -16,81 +15,122 @@ const TWITCH_CLIENT_ID1 = accessEnv("TWITCH_CLIENT_ID", "ne4n4c0oenxn6zgq2ky3vtv
 const TWITCH_CLIENT_SECRET1 = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k700u8q0wctlw9v0i");
 
 const setupRoutes = app => {
-  // Test route for deployment
-  app.get("/twitch/hello", async (req, res, next) => {
-   return res.json({
-     hello: "Hello :)"
-   }) 
-  });
 
-  app.post("/twitch/vod/chat", async (req, res, next) => {
+  // Get Twitch clips that are somewhat interesting from the videoId given
+  app.post("/twitch/vod/clips", async (req, res, next) => {
+
+    const twitchChat = await TwitchChat.findOne({ attributes: {}, where: {
+      videoId: req.body.videoId}});
+
+    if (twitchChat) return res.json({
+      "data": twitchChat.chat
+    });
+
     try {
-
-      var array = [];
+      var data = [];
+      var game_cache = {};
       var pagination = "";
-
+      
       const twitchUser = await Twitch.findOne({ attributes: {}, where: {
         userId: req.body.userId}});
+        
+      const video = await got.get('https://api.twitch.tv/helix/videos?id=' + req.body.videoId, {
+      headers: {
+        'Authorization': 'Bearer ' + twitchUser.access_token,
+        'Client-Id': TWITCH_CLIENT_ID
+      }});
 
-      var i = 0
-      while(i < 200) {
-        const {resArray, cursor} = await parseChat(req.body.videoId, twitchUser.access_token, pagination);
-        pagination = cursor
-        array.push(resArray)
-        i++
-      }
+      const vid_user_id = JSON.parse(video.body).data[0].user_id;
+      const video_created_at = new Date(JSON.parse(video.body).data[0].created_at);
+      const video_duration = JSON.parse(video.body).data[0].duration;
+      const date = video_duration.split(/([0-9]+)/);
 
-      var responseArray = [].concat.apply([], array);
+      var video_ended_at = new Date(video_created_at)
+      video_ended_at.setHours(video_ended_at.getHours() + parseInt(date[1]), video_ended_at.getMinutes() + parseInt(date[3]), video_ended_at.getSeconds() + parseInt(date[5]));
 
-      const twc = await TwitchChat.findOrCreate({
+      const clips = await got.get('https://api.twitch.tv/helix/clips?broadcaster_id=' + vid_user_id + '&started_at=' + video_created_at.toISOString() + '&ended_at=' + video_ended_at.toISOString(), {
+      headers: {
+        'Authorization': 'Bearer ' + twitchUser.access_token,
+        'Client-Id': TWITCH_CLIENT_ID
+      }});
+
+      var j = 0;
+      parseClip: while (j < 10) {
+        const clip = JSON.parse(clips.body).data[j];
+        const clip_date = clip.created_at;
+        const clip_duration = clip.duration;
+        
+        const offset = (new Date(clip_date) - new Date(video_created_at))/1000 - Math.floor(clip_duration);
+
+        var i = 0;
+        var impressions = 0;
+        var msgs = 0;
+        while(i < 10) {
+          try {
+            const clip_chat = await got.get('https://api.twitch.tv/v5/videos/' + req.body.videoId + '/comments'
+            + '?content_offset_seconds=' + offset
+            + '&cursor=' + pagination, {
+            headers: {
+              'Authorization': 'Bearer ' + twitchUser.access_token,
+              'Client-Id': TWITCH_CLIENT_ID
+            }});
+
+            const chat = JSON.parse(clip_chat.body);
+            pagination = chat._next;
+  
+            for (const item of chat.comments) {
+              var n = item.message.body.search(/(ha)+|l(ol)+|(jaj)+|(pog)+|(kekw)+|(xd+)|lul|(ja)+/i);
+
+              if(n != -1) impressions++
+              msgs++;
+
+            };
+            i++;
+          } catch (error) {
+            j++;
+            break parseClip;
+          }
+        }
+        if(impressions/msgs*100 > 15) {
+          var game = "";
+          if (clip.game_id in game_cache) {
+            game = game_cache[clip.game_id]
+          } else {
+            const game_name = await got.get('https://api.twitch.tv/helix/games'
+              + '?id=' + clip.game_id, {
+              headers: {
+                'Authorization': 'Bearer ' + twitchUser.access_token,
+                'Client-Id': TWITCH_CLIENT_ID
+            }});
+
+            game_cache[clip.game_id] = JSON.parse(game_name.body).data[0].name;
+            game = game_cache[clip.game_id];
+          }
+
+          data.push({
+            "url": clip.url, 
+            "title": clip.title,
+            "game": game,
+            "totalMsgs": msgs,
+            "impressions": impressions,
+            "percentaje": impressions/msgs*100
+          });
+        }
+        j++;
+      };
+
+      await TwitchChat.findOrCreate({
         where: {
           videoId: req.body.videoId,
         },
         defaults: {
           id: generateUUID(),
-          chat: JSON.stringify(responseArray)
+          chat: JSON.stringify(data)
         }    
-      })
-      
-      return res.json({
-        "data": twc
       });
-    } catch (e) {
-      return next(e);
-    }
-   });
 
-  //
-  app.post("/twitch/vod/chat/pagination", async (req, res, next) => {
-    try {
-      var array = [];
-      var pagination = "";
-      
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});      
-      
-      var i = 0
-      while(true) {
-        const response = await got.get('https://api.twitch.tv/v5/videos/' + req.body.videoId + '/comments'
-        + '?cursor=' + pagination, {
-        headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
-          'Client-Id': TWITCH_CLIENT_ID
-        }});
-
-        array.push({ "cursor": pagination })
-        pagination = JSON.parse(response.body)._next
-
-        if(pagination == undefined || pagination == null) break;
-
-        i++
-        console.log(i)
-      }
-
-      var responseArray = [].concat.apply([], array);
-      
       return res.json({
-        "data": responseArray
+        data
       });
     } catch (e) {
       return next(e);

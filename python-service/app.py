@@ -1,7 +1,7 @@
 import twitch
 from flask import Flask, jsonify
 from flask_restful import Api, Resource, reqparse
-from chat_downloader import ChatDownloader 
+import pytchat
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,13 +14,10 @@ parser = reqparse.RequestParser()
 class getTwitchVodChat(Resource):
     def get(self):
 
-        created = []
-        msg = []
-
-        url = 'https://www.youtube.com/watch?v=bDhC6JfS1q0'
-        chat = ChatDownloader().get_chat(url)       # create a generator
-        for message in chat:                        # iterate over messages
-            print(chat.format(message))             # print the formatted message
+        chat = pytchat.create(video_id="OMNU7dfXZvQ")
+        while chat.is_alive():
+            for c in chat.get().sync_items():
+                print(f"{c.datetime} [{c.author.name}]- {c.message}")
         
         return ({
         })

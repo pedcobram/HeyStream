@@ -173,6 +173,14 @@ const typeDefs = gql`
         channelId: String
     }
 
+    type TwitchClip {
+        url: String!
+        title: String!
+        game: String!
+        impressions: String!
+        percentaje: String!
+    }
+
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
@@ -191,6 +199,7 @@ const typeDefs = gql`
         getTwitchVods(userId: String!, loginName: String!): TwitchVods
         getYoutubeVods(userId: String!, channelId: String!): YoutubeStream
         getYoutubeChannelId(userId: String!, videoId: String!): YoutubeChannelId
+        getTwitchStreamClips(userId: String!, videoId: String!): [TwitchClip!]!
     }
 `;
 

@@ -176,6 +176,7 @@ const typeDefs = gql`
     type TwitchClip {
         url: String!
         title: String!
+        vod_timestamp: String!
         game: String!
         impressions: String!
         percentaje: String!

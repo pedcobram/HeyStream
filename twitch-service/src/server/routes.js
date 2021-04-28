@@ -61,6 +61,8 @@ const setupRoutes = app => {
         const clip_duration = clip.duration;
         
         const offset = (new Date(clip_date) - new Date(video_created_at))/1000 - Math.floor(clip_duration);
+        const vod_timestamp_date = new Date((offset * 1000) - 30*1000) //- 60*1000 
+        const vod_timestamp = vod_timestamp_date.getHours() + "h" + vod_timestamp_date.getMinutes() + "m" + vod_timestamp_date.getSeconds() + "s";
 
         var i = 0;
         var impressions = 0;
@@ -110,6 +112,7 @@ const setupRoutes = app => {
           data.push({
             "url": clip.url, 
             "title": clip.title,
+            "vod_timestamp": vod_timestamp,
             "game": game,
             "totalMsgs": msgs,
             "impressions": impressions,

@@ -131,7 +131,8 @@ html, body, #app {
 
 #box {
     display: inline-block;
-    margin-left: 5%
+    margin-left: 5%;
+    color: var(--silver)
 }
 
 .right {
@@ -153,4 +154,27 @@ html, body, #app {
 
 .centerImage {
     display: inline-block;
+}
+
+.clipContainer {
+    position: absolute;
+    display: inline-block;
+     
+}
+
+.clips {
+    overflow: auto;
+    height: 720px;
+    width: 400px;
+}
+
+.loadingClips {
+    display:block;
+    margin:auto;
+    transform: translateY(100%);
+}
+
+.marginClips {
+    width: 400px;
+    white-space: nowrap;
 }

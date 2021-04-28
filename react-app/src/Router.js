@@ -28,6 +28,7 @@ function Router() {
                 <Route exact path="/twitch/stream/:user" children={<TwitchStream/>}/>
                 <Route exact path="/youtube/stream/:videoId" children={<YoutubeStream/>}/>
                 <Route exact path="/twitch/vod/:vodId" children={<TwitchVod/>}/>
+                <Route exact path="/twitch/vod/:vodId/:timestamp" children={<TwitchVod/>}/>
                 <Route exact path="/twitch/vods/:user" children={<TwitchVods/>}/>
                 <Route exact path="/youtube/vod/:videoId" children={<YoutubeVod/>}/>
                 <Route exact path="/youtube/vods/:channelId" children={<YoutubeVods/>}/>

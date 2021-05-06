@@ -46,14 +46,14 @@ const TwitchVod = () => {
                 {twLoading ? 
                     <div id="box" className="clips marginClips" width="100%">
                         <p style={{ position: "absolute",
-                            top: "25%",
-                            left: "45%",
-                            transform: "translate(-50%, 50%)" 
+                            top: "30%",
+                            left: "95%",
+                            transform: "translate(-100%, 50%)" 
                         }} className="loadingClips">Wait while we load some interesting clips</p>
                         <img style={{
                             position: "absolute",
-                            top: "20%",
-                            left: "32.5%"
+                            top: "25%",
+                            left: "84.5%"
                         }} className="loadingClips" src={ loadingGif } width="100" height="100" />
                     </div>
                 :

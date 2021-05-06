@@ -1,6 +1,6 @@
 import got from "got";
 
-import { User, YouTube } from "#root/db/models";
+import { User, YouTube, YoutubeChat } from "#root/db/models";
 
 import accessEnv from "#root/helpers/accessEnv";
 import generateUUID from "#root/helpers/generateUUID";
@@ -21,6 +21,141 @@ const YOUTUBE_CLIENT_SECRET3 = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGY
 const REDIRECT_URI_LANDING3 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
 const setupRoutes = app => {
+
+  // Get clips from a youtube videoId: str, userId: str and next: bool
+  app.post('/youtube/vod/clips', async (req, res, next) => {
+
+    try {
+      //Start checks to stop if needed or requested
+      if(!req.body.userId || !req.body.videoId || req.body.next == null) {
+        return next(new Error("Incorrect parameters"));
+      }
+    
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+        
+      const videoDetails = await got.get('https://www.googleapis.com/youtube/v3/videos'
+          + '?part=contentDetails'
+          + '&id=' + req.body.videoId, {
+            headers: {
+              'Authorization': 'Bearer ' + yt.access_token,
+            },
+      });
+
+      const preVideoDuration = JSON.parse(videoDetails.body).items[0].contentDetails.duration.substring(2).match(/(\d+)H(\d+)M(\d+)S/);
+      const videoDuration = new Date(2020,1,11,(preVideoDuration[1] - 1),preVideoDuration[2],preVideoDuration[3]);
+
+      const ytChat = await YoutubeChat.findOne({ attributes: {}, where: {
+        videoId: req.body.videoId}});
+
+      if (ytChat) {
+        const [h,m,s] = ytChat.lastTimestamp.split(':');
+        const ltimestamp = new Date(2020,1,11,h,m,s);
+        if (videoDuration < ltimestamp) { 
+          return res.json({
+            "data": ytChat.chat,
+            "next": false
+          });
+        }
+      }
+
+      if(req.body.next === false && ytChat){
+        return res.json({
+          "data": ytChat.chat,
+          "next": true
+        }); 
+      }
+      // Start main body
+      var responseArray = [];
+      var totalImpressions = [];
+      var nextTime = 0;
+
+      if (req.body.next) {
+        const ytChat = await YoutubeChat.findOne({ attributes: {}, where: {
+          videoId: req.body.videoId}});
+
+        if(ytChat) nextTime = Number(ytChat?.lastTimestamp.split(':')[0]);
+      } 
+      //Start getting chat
+      for(let a = 0; a < 1; a++) {
+        await Promise.all([
+          got.get('http://python-service:7104/youtube/chat/' + req.body.videoId + '/' + Number(60*60*1+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+1)) + '_30_0'),
+          got.get('http://python-service:7104/youtube/chat/' + req.body.videoId + '/' + Number(60*60*1.5+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+2)) + '_00_0'),
+        ]).then((values) => {
+          for(let val of values) {
+            if(val != null) {
+              responseArray.push(JSON.parse(val.body));
+            }
+          }
+        });
+      }
+
+      const flattenedResponse = [].concat.apply([], responseArray);
+      //Start looking for impressions
+      for (let i = 0; i < flattenedResponse.length; i = i + 250) {
+        var impressions = 0;
+        for (let j = 0; j < 250; j++) {
+          var n = String(flattenedResponse[i + j]).search(/(ha)+|l(ol)+|(jaj)+|(pog)+|(kekw)+|(xd+)|lul|(ja)+/i);
+          
+          if(n != -1) impressions++;
+        }
+        if(impressions >= 60 && flattenedResponse.length > 0) {
+          const msg = flattenedResponse[i].split('-');
+          totalImpressions.push([msg[0], msg[1], impressions]);
+        }
+      }
+      //Start saving on DB depending of current iteration (first, second...)
+      if(req.body.next) {
+        const chat = await YoutubeChat.findOne({ attributes: {}, where: {
+            videoId: req.body.videoId}
+        });
+
+        const chatImpressions = [];
+
+        if(chat) {
+          for(let chats of chat.chat) {
+            totalImpressions.push(chats);
+          }
+          chatImpressions.push(totalImpressions);
+          
+        } else {
+          chatImpressions.push(totalImpressions);
+        }
+
+        chat.chat = JSON.stringify(totalImpressions);
+        chat.lastTimestamp = flattenedResponse.slice(-5)[0]?.split('-')[0] ? flattenedResponse.slice(-5)[0].split('-')[0] : null;
+
+        await chat.save();
+
+        const [h,m,s] = chat.lastTimestamp.split(':');
+        const ltimestamp = new Date(2020,1,11,h,m,s);
+        if (videoDuration < ltimestamp) { 
+          return res.json({
+            "data": JSON.parse(chat.chat),
+            "next": false
+          });
+        }
+      } else {
+        await YoutubeChat.findOrCreate({
+          where: {
+            videoId: req.body.videoId,
+          },
+          defaults: {
+            id: generateUUID(),
+            chat: JSON.stringify(totalImpressions),
+            lastTimestamp: flattenedResponse.slice(-5)[0]?.split('-')[0] ? flattenedResponse.slice(-5)[0].split('-')[0] : null
+          }    
+        });
+      }
+      //Default return
+      return res.json({
+        "data": totalImpressions,
+        "next": true
+      });
+    } catch (error) {
+     return next(error); 
+    }
+  });
   
   app.post('/youtube/streams/followed', async (req, res, next) => {
     try {
@@ -72,16 +207,16 @@ const setupRoutes = app => {
       
       while(i < totalResults) {
         const {resNextPageToken, array} = await parseFollowedChannelsPage(nextPageToken, accessToken);
-        nextPageToken = resNextPageToken
-        responseArray.push(array)
-        i = i + resultsPerPage
+        nextPageToken = resNextPageToken;
+        responseArray.push(array);
+        i = i + resultsPerPage;
       }
 
       var flattenedResponse = [].concat.apply([], responseArray);
      
       return res.json({
         response: flattenedResponse
-      })
+      });
     } catch (e) {
       return next(e);
     }

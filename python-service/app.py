@@ -1,45 +1,37 @@
-import twitch
-from flask import Flask, jsonify
-from flask_restful import Api, Resource, reqparse
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import pytchat
+import os
+import re
 
-app = Flask(__name__)
-api = Api(app)
+port = int(os.environ.get("PORT", 5000))
 
-client_id = "ne4n4c0oenxn6zgq2ky3vtvvfowe1b"
-client_secret = "1sl2kh3zcyag3k700u8q0wctlw9v0i"
+app = FastAPI()
 
-parser = reqparse.RequestParser()
+origins = ["*"]
 
-class getTwitchVodChat(Resource):
-    def get(self):
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"], 
+)
 
-        chat = pytchat.create(video_id="OMNU7dfXZvQ")
-        while chat.is_alive():
-            for c in chat.get().sync_items():
-                print(f"{c.datetime} [{c.author.name}]- {c.message}")
-        
-        return ({
-        })
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
-    parser.add_argument('code')
+@app.get("/youtube/chat/{videoId}/{startAt}/{stopAt}") 
+async def get(videoId: str, startAt: int, stopAt: str):
+    messages = []
+    chat = pytchat.create(videoId, seektime = startAt) #
+    while chat.is_alive():
+        data = chat.get()
+        for c in data.items:
+            message = f"{c.elapsedTime}-{c.message}"
+            messages.append(message)
+            if stopAt.replace("_", ":") in message:
+                return messages
 
-    def post(self):
-        args = parser.parse_args()
-        return {"data": args['code']}
-
-
-api.add_resource(getTwitchVodChat, "/twitch/vod/chat")
-
-@app.route('/')
-def home():
-    return jsonify({
-        "data": "Welcome Home" 
-    })
-
-@app.route('/test')
-def home2():
-    return "App Works test pogchamp!!!"
-
-if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port="7104")
+    

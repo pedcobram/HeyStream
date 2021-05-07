@@ -27,7 +27,7 @@ const setupRoutes = app => {
 
     try {
       //Start checks to stop if needed or requested
-      if(!req.body.userId || !req.body.videoId || req.body.next == null) {
+      if(!req.body.userId || !String(req.body.videoId) || req.body.next == null) {
         return next(new Error("Incorrect parameters"));
       }
     
@@ -36,7 +36,7 @@ const setupRoutes = app => {
         
       const videoDetails = await got.get('https://www.googleapis.com/youtube/v3/videos'
           + '?part=contentDetails'
-          + '&id=' + req.body.videoId, {
+          + '&id=' + String(req.body.videoId), {
             headers: {
               'Authorization': 'Bearer ' + yt.access_token,
             },
@@ -46,7 +46,7 @@ const setupRoutes = app => {
       const videoDuration = new Date(2020,1,11,(preVideoDuration[1] - 1),preVideoDuration[2],preVideoDuration[3]);
 
       const ytChat = await YoutubeChat.findOne({ attributes: {}, where: {
-        videoId: req.body.videoId}});
+        videoId: String(req.body.videoId)}});
 
       if (ytChat) {
         const [h,m,s] = ytChat.lastTimestamp.split(':');
@@ -72,15 +72,15 @@ const setupRoutes = app => {
 
       if (req.body.next) {
         const ytChat = await YoutubeChat.findOne({ attributes: {}, where: {
-          videoId: req.body.videoId}});
+          videoId: String(req.body.videoId)}});
 
         if(ytChat) nextTime = Number(ytChat?.lastTimestamp.split(':')[0]);
       } 
       //Start getting chat
       for(let a = 0; a < 1; a++) {
         await Promise.all([
-          got.get('http://python-service:7104/youtube/chat/' + req.body.videoId + '/' + Number(60*60*1+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+1)) + '_30_0'),
-          got.get('http://python-service:7104/youtube/chat/' + req.body.videoId + '/' + Number(60*60*1.5+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+2)) + '_00_0'),
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+1)) + '_30_0'),
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1.5+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+2)) + '_00_0'),
         ]).then((values) => {
           for(let val of values) {
             if(val != null) {
@@ -101,13 +101,17 @@ const setupRoutes = app => {
         }
         if(impressions >= 60 && flattenedResponse.length > 0) {
           const msg = flattenedResponse[i].split('-');
-          totalImpressions.push([msg[0], msg[1], impressions]);
+          totalImpressions.push([{
+            "time": msg[0],
+            "title": msg[1], 
+            "impressions": impressions
+          }]);
         }
       }
       //Start saving on DB depending of current iteration (first, second...)
       if(req.body.next) {
         const chat = await YoutubeChat.findOne({ attributes: {}, where: {
-            videoId: req.body.videoId}
+            videoId: String(req.body.videoId)}
         });
 
         const chatImpressions = [];
@@ -138,7 +142,7 @@ const setupRoutes = app => {
       } else {
         await YoutubeChat.findOrCreate({
           where: {
-            videoId: req.body.videoId,
+            videoId: String(req.body.videoId),
           },
           defaults: {
             id: generateUUID(),

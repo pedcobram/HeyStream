@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import ReactPlayer from "react-player/twitch";
 import { useHistory } from "react-router-dom";

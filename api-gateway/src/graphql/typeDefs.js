@@ -182,6 +182,17 @@ const typeDefs = gql`
         percentaje: String!
     }
 
+    type YoutubeClip {
+        time: String
+        title: String
+        impressions: String
+    }
+
+    type YoutubeClips {
+        data: [[YoutubeClip]]
+        next: Boolean
+    }
+
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
@@ -201,6 +212,7 @@ const typeDefs = gql`
         getYoutubeVods(userId: String!, channelId: String!): YoutubeStream
         getYoutubeChannelId(userId: String!, videoId: String!): YoutubeChannelId
         getTwitchStreamClips(userId: String!, videoId: String!): [TwitchClip!]!
+        getYoutubeClips(userId: String!, videoId: String!, next: Boolean!): YoutubeClips
     }
 `;
 

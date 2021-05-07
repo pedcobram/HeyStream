@@ -15,3 +15,4 @@ export { default as getTwitchVods} from "./getTwitchVods";
 export { default as getYoutubeVods} from "./getYoutubeVods";
 export { default as getYoutubeChannelId} from "./getYoutubeChannelId";
 export { default as getTwitchStreamClips} from "./getTwitchStreamClips";
+export { default as getYoutubeClips} from "./getYoutubeClips";

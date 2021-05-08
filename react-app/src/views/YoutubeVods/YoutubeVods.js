@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import Grid from 'react-css-grid';
 import { useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import SubText from "#root/components/shared/SubText";
 import Text from "#root/components/shared/Text";
@@ -45,9 +46,11 @@ const query = gql`
 
 const TwitchVods = () => {
 
+    if (!getCookie("userId")) useHistory().push("/");
+
     const { channelId } = useParams();
 
-    const { data, loading, error } = useQuery(query, {
+    const { data, loading } = useQuery(query, {
         variables: { 
             userId: getCookie("userId"),
             channelId: channelId
@@ -77,7 +80,7 @@ const TwitchVods = () => {
         <div>
             <CustomNavBar/>
             <div className="white centerDiv">
-                <h2>{data?.getYoutubeVods.items[0].snippet.channelTitle}'s latest stream vods</h2> 
+                <h2>YouTube - {data?.getYoutubeVods.items[0].snippet.channelTitle}'s latest stream vods</h2> 
             </div>
             <Grid className="centered">
                 {data?.getYoutubeVods.items.map((vod, idx) => (

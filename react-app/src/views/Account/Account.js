@@ -1,7 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery, gql, useMutation } from "@apollo/client"
-import styled from "styled-components";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import getCookie from "#root/components/shared/functions/getCookie";

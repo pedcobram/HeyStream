@@ -17,3 +17,4 @@ export { default as getYoutubeChannelId} from "./getYoutubeChannelId";
 export { default as getTwitchStreamClips} from "./getTwitchStreamClips";
 export { default as getYoutubeClips} from "./getYoutubeClips";
 export { default as getYoutubeVideoInfo} from "./getYoutubeVideoInfo";
+export { default as getTwitchVideoInfo} from "./getTwitchVideoInfo";

@@ -3,6 +3,16 @@ import got from "got";
 const TWITCH_SERVICE_URI = "http://twitch-service:7103";
 
 export default class TwitchService {
+
+    static async getTwitchVideoInfo({ userId, videoId }) {
+        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/video/videoId`, {
+            json: {
+                userId,
+                videoId
+            }
+        });
+        return body;
+    }
  
     static async TwitchLinkAccount() {
         const body = await got.get(`${TWITCH_SERVICE_URI}/twitch/link`);

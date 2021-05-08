@@ -1,9 +1,11 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import ReactPlayer from "react-player/twitch";
 
 import { useParams } from "react-router-dom";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
+import getCookie from "#root/components/shared/functions/getCookie";
 
 const TwitchStream = () => {
 
@@ -15,16 +17,20 @@ const TwitchStream = () => {
             <div>
                 <div className="center">
                     <div id="box">
-                        <ReactPlayer wrapper="div" width="1280px" height="720px" playing="true" url={"https://www.twitch.tv/{user}".replace('{user}', user)} align="left"/>
+                        <ReactPlayer wrapper="div" width="1280px" height="720px" playing={true} url={"https://www.twitch.tv/{user}".replace('{user}', user)} align="left"/>
                     </div>
                     <div id="box">
                         <iframe src={"https://www.twitch.tv/embed/{user}/chat?parent=localhost&darkpopout".replace("{user}", user)} height="720px" width="120%" align="right" />
                     </div>
                 </div>
                 <br/>
-                <div className="center">
-                    <a id="box" className="btn btn-dark" href={"/twitch/vods/" + user}>Go to VoDs</a>
-                </div>
+                {getCookie("userId") ? 
+                    <div className="center">
+                        <a id="box" className="btn btn-dark" href={"/twitch/vods/" + user}>Go to VoDs</a>
+                    </div>
+                :
+                    null
+                }
             </div>
         </div>
     );

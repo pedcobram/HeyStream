@@ -219,6 +219,7 @@ const typeDefs = gql`
         getTwitchStreamClips(userId: String!, videoId: String!): [TwitchClip!]!
         getYoutubeClips(userId: String!, videoId: String!, next: Boolean!): YoutubeClips
         getYoutubeVideoInfo(userId: String!, videoId: String!): YoutubeVideo
+        getTwitchVideoInfo(userId: String!, videoId: String!): TwitchVideo
     }
 `;
 

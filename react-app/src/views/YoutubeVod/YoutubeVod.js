@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
 import ReactPlayer from "react-player/youtube";
-import { useHistory } from "react-router-dom";
 
 import { useParams } from "react-router-dom";
 
@@ -46,8 +45,9 @@ const videoInfoQuery = gql`
 
 const YoutubeVod = () => {
 
+    if (!getCookie("userId")) useHistory().push("/");
+
     const loadingGif = require('../../images/loadingIcon.gif');
-    let history = useHistory();
 
     const [reload, setReload] = useState(0);
 
@@ -145,7 +145,7 @@ const YoutubeVod = () => {
                 <a id="box" className="btn btn-dark" onClick={() => {
                     window.location.href = "/youtube/vods/" + videoInfo?.getYoutubeVideoInfo.snippet.channelId
                 }}>Return</a>
-            </div>
+            </div>       
         </div>
     );
 }

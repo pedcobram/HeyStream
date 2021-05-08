@@ -16,6 +16,26 @@ const TWITCH_CLIENT_SECRET1 = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k7
 
 const setupRoutes = app => {
 
+  // Get Twitch video info from videoId
+  app.post("/twitch/video/videoId", async (req, res, next) => {
+    try {
+
+      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+
+      const response = await got.get('https://api.twitch.tv/helix/videos'
+      + '?id=' + req.body.videoId, {
+        headers: {
+          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }}); 
+
+      return res.json(JSON.parse(response.body));
+    } catch (e)  {
+      return next(e); 
+    }
+  });
+
   // Get Twitch clips that are somewhat interesting from the videoId given
   app.post("/twitch/vod/clips", async (req, res, next) => {
 

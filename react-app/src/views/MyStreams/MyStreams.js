@@ -106,7 +106,7 @@ const MyStreams = () => {
     const clickSeeLessYoutube = () => {
         setVisibleYoutubeStreams(5);
     }
-
+    
     return (
     <div>
         <CustomNavBar/>
@@ -128,6 +128,7 @@ const MyStreams = () => {
         </Filters>
         <div className="right">
             {twData ?
+                twitchDataLen <= 5 ? null : 
                 visibleTwitchStreams == twitchDataLen ?
                     <button className="btn btn-dark" type="button" onClick={clickSeeLessTwitch}>
                         See less Twitch Streams
@@ -145,6 +146,7 @@ const MyStreams = () => {
         <br/>
         <div className="right">
             {ytData ? 
+                youtubeDataLen <= 5 ? null : 
                 visibleYoutubeStreams == youtubeDataLen ?
                     <button className="btn btn-dark" type="button" onClick={clickSeeLessYoutube}>
                         See less Youtube Streams

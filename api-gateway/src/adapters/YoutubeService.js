@@ -4,6 +4,16 @@ const YOUTUBE_SERVICE_URI = "http://youtube-service:7102";
 
 export default class YoutubeService {
 
+    static async getYoutubeVideoInfo({ userId, videoId, next}) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/stream/videoId`, {
+            json: {
+                userId,
+                videoId
+            }
+        });
+        return JSON.parse(body.body);
+    }
+
     static async getYoutubeClips({ userId, videoId, next}) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/vod/clips`, {
             json: {

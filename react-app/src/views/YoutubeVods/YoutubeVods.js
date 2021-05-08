@@ -57,10 +57,29 @@ const TwitchVods = () => {
 
     if (loading) return null;
 
+    if (!data) {
+        return (
+            <div>
+                <CustomNavBar/>
+                <div className="white centerDiv">
+                    <h2>This streamer has no vods saved on its channel</h2> 
+                </div>
+                <div className="centerDiv">
+                <a className="btn btn-dark" onClick={() => {
+                    window.location.href = "/"
+                }}>Return</a>
+            </div>
+            </div>
+        )
+    }
+
     return (
         <div>
             <CustomNavBar/>
-            <Grid className="centered">  
+            <div className="white centerDiv">
+                <h2>{data?.getYoutubeVods.items[0].snippet.channelTitle}'s latest stream vods</h2> 
+            </div>
+            <Grid className="centered">
                 {data?.getYoutubeVods.items.map((vod, idx) => (
                     <Video key={idx}>
                         <div className="container">
@@ -71,6 +90,11 @@ const TwitchVods = () => {
                                     <img src="" width="320px" height="180px"/>
                                 }
                             </a>
+                            <div className="bottom-left">
+                                <div className="viewers">
+                                    {new Date(vod.snippet.publishedAt).toLocaleString()}
+                                </div>
+                            </div>
                         </div>
                         <Text title={vod.snippet.title}>{vod.snippet.title}</Text>
                         <SubText>{vod.snippet.channelTitle}</SubText>

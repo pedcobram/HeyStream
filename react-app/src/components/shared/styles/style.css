@@ -159,11 +159,11 @@ html, body, #app {
 .clipContainer {
     position: absolute;
     display: inline-block;
-     
 }
 
 .clips {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-wrap: break-word;
     height: 720px;
     width: 400px;
 }
@@ -177,4 +177,15 @@ html, body, #app {
 .marginClips {
     width: 400px;
     white-space: nowrap;
+}
+
+.centerButton {
+    display: flex;
+    justify-content: center;
+    margin: 1px;
+}
+
+.centerDiv {
+    display: flex;
+    justify-content: center;
 }

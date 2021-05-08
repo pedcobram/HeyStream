@@ -139,16 +139,6 @@ const typeDefs = gql`
         thumbnails: Thumbnail!
     }
 
-    type Mutation {
-        createUser(email: String!, password: String!): User!
-        createUserSession(email: String!, password: String!): UserSession!
-        deleteUserSession(sessionId: ID!): Boolean!
-        twitchLanding(code: String!, userId: String!): Boolean!
-        deleteTwitchSession(userId: String!): Boolean!
-        youtubeLanding(code: String!, userId: String!): Boolean!
-        deleteYoutubeSession(userId: String!): Boolean!
-    }
-
     type TwitchVod {
         id: String
         user_id: String
@@ -193,6 +183,21 @@ const typeDefs = gql`
         next: Boolean
     }
 
+    type YoutubeVideo {
+        id: String!
+        snippet: SnippetStream!
+    }
+
+    type Mutation {
+        createUser(email: String!, password: String!): User!
+        createUserSession(email: String!, password: String!): UserSession!
+        deleteUserSession(sessionId: ID!): Boolean!
+        twitchLanding(code: String!, userId: String!): Boolean!
+        deleteTwitchSession(userId: String!): Boolean!
+        youtubeLanding(code: String!, userId: String!): Boolean!
+        deleteYoutubeSession(userId: String!): Boolean!
+    }
+
     type Query {
         userSession(me: Boolean!): UserSession
         getUser(id: String!): User
@@ -213,6 +218,7 @@ const typeDefs = gql`
         getYoutubeChannelId(userId: String!, videoId: String!): YoutubeChannelId
         getTwitchStreamClips(userId: String!, videoId: String!): [TwitchClip!]!
         getYoutubeClips(userId: String!, videoId: String!, next: Boolean!): YoutubeClips
+        getYoutubeVideoInfo(userId: String!, videoId: String!): YoutubeVideo
     }
 `;
 

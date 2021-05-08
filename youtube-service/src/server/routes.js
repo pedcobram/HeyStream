@@ -22,6 +22,31 @@ const REDIRECT_URI_LANDING3 = accessEnv("REDIRECT_URI", "http://localhost:7001/y
 
 const setupRoutes = app => {
 
+  //Get past stream info from videoId
+  app.post('/youtube/stream/videoId', async (req, res, next) => {
+    try {
+      
+      const yt = await YouTube.findOne({ attributes: {}, where: {
+        userId: req.body.userId}});
+      
+      const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
+      + '?part=id,snippet'
+      + '&id=' + req.body.videoId, {
+        headers: {
+          'Authorization': 'Bearer ' + yt.access_token
+        }
+      });
+
+      const streamInfo = JSON.parse(response.body).items[0];
+
+      return res.json({
+        "data": streamInfo
+      })
+    } catch (e) {
+      return next(e);
+    }
+  });
+
   // Get clips from a youtube videoId: str, userId: str and next: bool
   app.post('/youtube/vod/clips', async (req, res, next) => {
 
@@ -73,14 +98,20 @@ const setupRoutes = app => {
       if (req.body.next) {
         const ytChat = await YoutubeChat.findOne({ attributes: {}, where: {
           videoId: String(req.body.videoId)}});
-
-        if(ytChat) nextTime = Number(ytChat?.lastTimestamp.split(':')[0]);
-      } 
+        if(ytChat) {
+          if (Number(ytChat?.lastTimestamp.split(':').length) <= 2) {
+            nextTime = 0;
+          } else {
+            nextTime = Number(ytChat?.lastTimestamp.split(':')[0]);
+          }
+        } 
+      }
+      
       //Start getting chat
-      for(let a = 0; a < 1; a++) {
+      if(nextTime == 0 && !ytChat) {
         await Promise.all([
-          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+1)) + '_30_0'),
-          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1.5+3600*(a+nextTime)) + '/' + String(Number(a+Number(nextTime)+2)) + '_00_0'),
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*1) + '/' + '30_0'),
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*30) + '/' + '1_00_0'),
         ]).then((values) => {
           for(let val of values) {
             if(val != null) {
@@ -88,14 +119,25 @@ const setupRoutes = app => {
             }
           }
         });
-      }
+      } else {
+        await Promise.all([
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1+3600*(nextTime)) + '/' + String(Number(Number(nextTime)+1)) + '_30_0'),
+          got.get('http://python-service:7104/youtube/chat/' + String(req.body.videoId) + '/' + Number(60*60*1.5+3600*(nextTime)) + '/' + String(Number(Number(nextTime)+2)) + '_00_0'),
+        ]).then((values) => {
+          for(let val of values) {
+            if(val != null) {
+              responseArray.push(JSON.parse(val.body));
+            }
+          }
+        });
+      }      
 
       const flattenedResponse = [].concat.apply([], responseArray);
       //Start looking for impressions
       for (let i = 0; i < flattenedResponse.length; i = i + 250) {
         var impressions = 0;
         for (let j = 0; j < 250; j++) {
-          var n = String(flattenedResponse[i + j]).search(/(ha)+|l(ol)+|(jaj)+|(pog)+|(kekw)+|(xd+)|lul|(ja)+/i);
+          var n = String(flattenedResponse[i + j]).search(/(ha)+|l(ol)+|(jaj)+|(pog)+|(kekw)+|(xd+)|lul|(ja)+|(kk+)/i);
           
           if(n != -1) impressions++;
         }
@@ -135,6 +177,7 @@ const setupRoutes = app => {
         const ltimestamp = new Date(2020,1,11,h,m,s);
         if (videoDuration < ltimestamp) { 
           return res.json({
+            flattenedResponse,
             "data": JSON.parse(chat.chat),
             "next": false
           });
@@ -153,6 +196,7 @@ const setupRoutes = app => {
       }
       //Default return
       return res.json({
+        flattenedResponse,
         "data": totalImpressions,
         "next": true
       });

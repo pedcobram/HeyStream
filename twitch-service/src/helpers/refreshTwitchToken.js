@@ -1,7 +1,6 @@
 import got from "got";
-import qs from 'qs';
 
-import { User, Twitch } from "#root/db/models";
+import { Twitch } from "#root/db/models";
 import accessEnv from "#root/helpers/accessEnv"
 
 const TWITCH_CLIENT_ID = accessEnv("TWITCH_CLIENT_ID", "lssv1zkc8pk1cvuo7tbdq3j0gtbxdr");

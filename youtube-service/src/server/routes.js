@@ -20,28 +20,22 @@ const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjh
 const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
+const YOUTUBE_API_KEY = "AIzaSyAOAy16ysA3gCamO8dFU4CZUbOqaCDq0xY";
+
 const setupRoutes = app => {
 
   //Get channels by query
   app.post("/youtube/search", async (req, res, next) => {
     try {
-      
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
 
       const response = await got.get('https://www.googleapis.com/youtube/v3/search'
       + '?part=snippet'
       + '&q=' + req.body.query
       + '&type=channel'
       + '&maxResults=20'
-      + '&order=relevance', 
-      {
-        headers: {
-          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
-      }});  
+      + '&order=relevance'
+      + '&key=' + YOUTUBE_API_KEY
+      ); 
 
       var liveArray = [];
       
@@ -52,11 +46,9 @@ const setupRoutes = app => {
             + '&channelId=' + item.snippet.channelId
             + '&type=video'
             + '&eventType=live'
-            + '&order=relevance', {
-              headers: {
-                'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token,
-              }
-          });
+            + '&order=relevance'
+            + '&key=' + YOUTUBE_API_KEY
+            );
           
           liveArray.push(JSON.parse(liveResponse.body).items[0].id.videoId);
         } else {
@@ -79,19 +71,11 @@ const setupRoutes = app => {
   app.post('/youtube/stream/videoId', async (req, res, next) => {
     try {
       
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
-      
       const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
       + '?part=id,snippet'
-      + '&id=' + req.body.videoId, {
-        headers: {
-          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
-        }
-      });
+      + '&id=' + req.body.videoId
+      + '&key=' + YOUTUBE_API_KEY
+      );
 
       const streamInfo = JSON.parse(response.body).items[0];
 
@@ -261,6 +245,7 @@ const setupRoutes = app => {
     }
   });
   
+  // Get followed Youtube streams
   app.post('/youtube/streams/followed', async (req, res, next) => {
     try {
 
@@ -330,19 +315,11 @@ const setupRoutes = app => {
   app.post('/youtube/stream/channelId', async (req, res, next) => {
     try {
 
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
-      
       const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
       + '?part=id,snippet'
-      + '&id=' + req.body.videoId, {
-        headers: {
-          'Authorization': 'Bearer ' + youtubeSession.access_token
-        }
-      });
+      + '&id=' + req.body.videoId
+      + '&key=' + YOUTUBE_API_KEY
+      );
 
       const channelId = JSON.parse(response.body).items[0].snippet.channelId;
 
@@ -378,12 +355,6 @@ const setupRoutes = app => {
   // Get youtube top 10 streams for the home page
   app.get("/youtube/streams/top", async (req, res, next) => {
     try {
-      
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
 
       const response = await got.get('https://www.googleapis.com/youtube/v3/search'
       + '?part=snippet'
@@ -391,11 +362,9 @@ const setupRoutes = app => {
       + '&type=video'
       + '&videoCategoryId=20'
       + '&maxResults=10'
-      + '&order=viewCount', 
-      {
-        headers: {
-          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
-      }});  
+      + '&order=viewCount'
+      + '&key=' + YOUTUBE_API_KEY
+      );  
 
       return res.json(JSON.parse(response.body));
     } catch (e) {
@@ -447,14 +416,15 @@ const setupRoutes = app => {
 
       const data = JSON.parse(response.body);
 
-      const user = await got.get("http://users-service:7101/sessions/" + req.body.userId);
+      const user = await User.findOne({ attributes: {}, where: {
+        id: req.body.userId}});
 
       const created = await YouTube.create({
         id: generateUUID(),
         access_token: data.access_token,
         refresh_token: data.refresh_token,
-        userId: JSON.parse(user.body).userId
-      })
+        userId: user.id
+      });
 
       return res.json({
         message: "Everything went Ok !",
@@ -465,50 +435,9 @@ const setupRoutes = app => {
     }
   });
 
-  // Refresh the youtube access_token of an userId
-  app.post("/youtube/refreshToken", async (req, res, next) => {
-    try {
-      
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
-
-      //if (!yt) return await next(new Error("No data for this user ID!"));
-
-      const response = await got.post('https://www.googleapis.com/o/oauth2/token'
-          + '?client_id=' + YOUTUBE_CLIENT_ID
-          + '&client_secret=' + YOUTUBE_CLIENT_SECRET
-          + '&refresh_token=' + yt.dataValues.refresh_token
-          + '&grant_type=refresh_token',{ 
-          headers: {
-            Host: 'accounts.google.com',
-            ContentType: 'application/x-www-form-urlencoded'
-          }
-        }
-      );
-
-      const parsed_response = JSON.parse(response.body);
-
-      yt.access_token = parsed_response.access_token;
-
-      await yt.save();
-
-      return res.json({
-        message: "Youtube token updated correctly!"
-      });
-    } catch (e) {
-      return next(e);
-    }
-  });
-
   // Get previous finished streams from youtube
   app.post("/youtube/streams/vods", async (req, res, next) => {
     try {
-
-      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
-        email: 'admin@heystream.com'}});
-
-      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
-        userId: youtubeAdmin.dataValues.id}});
 
       const response = await got.get('https://www.googleapis.com/youtube/v3/search'
       + '?part=id,snippet'
@@ -516,11 +445,9 @@ const setupRoutes = app => {
       + '&type=video'
       + '&eventType=completed'
       + '&maxResults=50'
-      + '&order=date', {
-        headers: {
-          Authorization: 'Bearer ' + youtubeSession.dataValues.access_token
-        }
-      });
+      + '&order=date'
+      + '&key=' + YOUTUBE_API_KEY
+      );
 
       return res.json({
         data: JSON.parse(response.body)
@@ -535,8 +462,6 @@ const setupRoutes = app => {
     try {
       const yt = await YouTube.findOne({ attributes: {}, where: {
         userId: req.params.userId}});
-
-      //if (!yt) return await next(new Error("No data for this user ID!"));
 
       return res.json(yt);
     } catch (e) {

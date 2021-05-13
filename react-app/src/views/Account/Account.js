@@ -107,8 +107,6 @@ const Account = () => {
         }
     });
 
-    console.log(ytUserInfo)
-
     const [deleteTwitchSession] = useMutation(mutation);
     const [deleteYoutubeSession] = useMutation(mutation2);
 
@@ -153,9 +151,11 @@ const Account = () => {
                     {getCookie("youtubeAccessToken") ? 
                         <div >
                             {ytUserInfo ? 
-                                <div className="white marginRightAccount">
-                                    Account: {ytUserInfo.getYoutubeUserInfo?.title}  
-                                    <img src={ytUserInfo.getYoutubeUserInfo?.thumbnails.medium.url} width="40px" height="40px"/>
+                                <div className="centerDiv marginBottonAccount">
+                                    <div className="white marginRightAccount">
+                                        Account: {ytUserInfo.getYoutubeUserInfo?.title}  
+                                        <img src={ytUserInfo.getYoutubeUserInfo?.thumbnails.medium.url} width="40px" height="40px"/>
+                                    </div>
                                 </div>
                             : 
                                 null}

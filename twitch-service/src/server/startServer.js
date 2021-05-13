@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 
 import refreshTwitchToken from "#root/helpers/refreshTwitchToken"
+import refreshAdminTwitchToken from "#root/helpers/refreshAdminTwitchToken"
 import accessEnv from "#root/helpers/accessEnv"
 
 import setupRoutes from "./routes";
@@ -27,6 +28,9 @@ app.use((err, req, res, next) => {
         message: err.message
     });
 });
+
+//Cada 15 días refrescamos el token de la cuenta Admin
+setInterval(refreshAdminTwitchToken, 1000*60*60*24*15);
 
 //Cada 30 minutos refrescamos tokens de Twitch
 setInterval(refreshTwitchToken, 1000*60*30)

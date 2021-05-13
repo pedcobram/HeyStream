@@ -92,13 +92,11 @@ const YoutubeVod = () => {
         refetchNext();
     }
 
-    console.log(videoInfo)
-
     return (
         <div>
             <CustomNavBar/>
             <div className="center">
-                <div id="box">
+                <div id="box" className="textNoClip">
                     <h3>{videoInfo?.getYoutubeVideoInfo.snippet.channelTitle} - {videoInfo?.getYoutubeVideoInfo.snippet.title}</h3>
                     <ReactPlayer wrapper="div" width="1280px" height="720px" controls={true} playing={true} url={"https://www.youtube.com/watch?v={videoId}?t={timestamp}".replace('{videoId}', videoId).replace('{timestamp}', timestampSeconds)} align="left"/>
                 </div>

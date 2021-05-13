@@ -8,8 +8,8 @@ import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import getCookie from "#root/components/shared/functions/getCookie";
 
 const query = gql`
-    query($userId: String!, $videoId: String!) {
-        getYoutubeChannelId(userId: $userId, videoId: $videoId) {
+    query($videoId: String!) {
+        getYoutubeChannelId(videoId: $videoId) {
             channelId
         }
     }

@@ -60,6 +60,9 @@ const CustomNavBar = () => {
                     HeyStream</Navbar.Brand>
                     <Nav className="ml-auto" id="nav" >
                         <Nav.Item>
+                            <Nav.Link id="myStreams" href="/search">Search Streams</Nav.Link>
+                        </Nav.Item> 
+                        <Nav.Item>
                             <Nav.Link id="myStreams" href="/myStreams">My Streams</Nav.Link>
                         </Nav.Item> 
                         <Nav.Item >
@@ -92,6 +95,9 @@ const CustomNavBar = () => {
                         />{' '}
                     HeyStream</Navbar.Brand>
                 <Nav className="ml-auto" id="nav">
+                    <Nav.Item>
+                        <Nav.Link id="myStreams" href="/search">Search Streams</Nav.Link>
+                    </Nav.Item>
                     <Nav.Item>
                         <DropdownButton title="Account" key="left" id="dropdown-button-drop-left" drop="left">
                             <AccountDetails />

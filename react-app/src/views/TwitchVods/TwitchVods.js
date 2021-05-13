@@ -1,5 +1,4 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
 import Grid from 'react-css-grid';
 import { useParams } from "react-router-dom";
@@ -12,8 +11,8 @@ import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import getCookie from "#root/components/shared/functions/getCookie";
 
 const query = gql`
-    query($userId: String!, $loginName: String!) {
-        getTwitchVods(userId: $userId, loginName: $loginName) {
+    query($loginName: String!) {
+        getTwitchVods(loginName: $loginName) {
             data {
                 id
                 user_id
@@ -35,16 +34,13 @@ const query = gql`
 
 const TwitchVods = () => {
 
-    if (!getCookie("userId")) useHistory().push("/");
-
     const {user} = useParams();
 
-    const { data, loading, error } = useQuery(query, {
-        variables: { 
-            userId: getCookie("userId"),
+    const { data, loading } = useQuery(query, {
+        variables: {
             loginName: user
         },
-        errorPolicy: "all"
+        errorPolicy: "all",
     }); 
 
     if (loading) return null;
@@ -62,7 +58,7 @@ const TwitchVods = () => {
                 }}>Return</a>
             </div>
             </div>
-        )
+        );
     }
 
     return (

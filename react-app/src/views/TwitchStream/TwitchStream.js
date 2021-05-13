@@ -1,11 +1,10 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import ReactPlayer from "react-player/twitch";
 
 import { useParams } from "react-router-dom";
 
 import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
-import getCookie from "#root/components/shared/functions/getCookie";
+
 
 const TwitchStream = () => {
 
@@ -24,13 +23,9 @@ const TwitchStream = () => {
                     </div>
                 </div>
                 <br/>
-                {getCookie("userId") ? 
-                    <div className="center">
-                        <a id="box" className="btn btn-dark" href={"/twitch/vods/" + user}>Go to VoDs</a>
-                    </div>
-                :
-                    null
-                }
+                <div className="center">
+                    <a id="box" className="btn btn-dark" href={"/twitch/vods/" + user}>Go to VoDs</a>
+                </div>
             </div>
         </div>
     );

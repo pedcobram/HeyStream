@@ -16,17 +16,47 @@ const TWITCH_CLIENT_SECRET1 = accessEnv("TWITCH_CLIENT_SECRET", "1sl2kh3zcyag3k7
 
 const setupRoutes = app => {
 
+  app.post("/twitch/search", async (req, res, next) => {
+    try {
+      
+      const twitchAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const twitchSession = await Twitch.findOne({ attributes: {}, where: {
+        userId: twitchAdmin.dataValues.id}});
+
+      const response = await got.get('https://api.twitch.tv/helix/search/channels' 
+      + '?query=' + req.body.query, {
+        headers: {
+          'Authorization': 'Bearer ' + twitchSession.access_token,
+          'Client-Id': TWITCH_CLIENT_ID
+      }});
+
+      const r = JSON.parse(response.body).data;
+
+      return res.json({
+        "data": r 
+      });
+    } catch (error) {
+      return next(error);
+    }
+  });
+
   // Get Twitch video info from videoId
   app.post("/twitch/video/videoId", async (req, res, next) => {
     try {
 
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
+      const twitchAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const twitchSession = await Twitch.findOne({ attributes: {}, where: {
+        userId: twitchAdmin.dataValues.id}});
+
 
       const response = await got.get('https://api.twitch.tv/helix/videos'
       + '?id=' + req.body.videoId, {
         headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Authorization': 'Bearer ' + twitchSession.dataValues.access_token,
           'Client-Id': TWITCH_CLIENT_ID
       }}); 
 
@@ -164,13 +194,16 @@ const setupRoutes = app => {
   app.post("/twitch/streams/vods", async (req, res, next) => {
     try {
 
-      const twitchUser = await Twitch.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
+      const twitchAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const twitchSession = await Twitch.findOne({ attributes: {}, where: {
+        userId: twitchAdmin.dataValues.id}});
 
       const response1 = await got.get('https://api.twitch.tv/helix/users'
       + '?login=' + req.body.loginName, {
         headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Authorization': 'Bearer ' + twitchSession.dataValues.access_token,
           'Client-Id': TWITCH_CLIENT_ID
       }}); 
 
@@ -182,7 +215,7 @@ const setupRoutes = app => {
       + '&period=all'
       + '&type=archive', {
         headers: {
-          'Authorization': 'Bearer ' + twitchUser.access_token,
+          'Authorization': 'Bearer ' + twitchSession.dataValues.access_token,
           'Client-Id': TWITCH_CLIENT_ID
       }});
 

@@ -13,8 +13,8 @@ import CustomNavBar from "#root/components/CustomNavBar/CustomNavBar";
 import getCookie from "#root/components/shared/functions/getCookie";
 
 const query = gql`
-    query($userId: String!, $channelId: String!) {
-        getYoutubeVods(userId: $userId, channelId: $channelId) {
+    query($channelId: String!) {
+        getYoutubeVods(channelId: $channelId) {
             nextPageToken
             pageInfo {
                 totalResults
@@ -46,8 +46,6 @@ const query = gql`
 
 const TwitchVods = () => {
 
-    if (!getCookie("userId")) useHistory().push("/");
-
     const { channelId } = useParams();
 
     const { data, loading } = useQuery(query, {
@@ -60,20 +58,20 @@ const TwitchVods = () => {
 
     if (loading) return null;
 
-    if (!data) {
+    if (data.getYoutubeVods.items.length == 0)  {
         return (
             <div>
                 <CustomNavBar/>
                 <div className="white centerDiv">
-                    <h2>This streamer has no vods saved on its channel</h2> 
+                    <h2>This channel has no vods saved</h2> 
                 </div>
                 <div className="centerDiv">
-                <a className="btn btn-dark" onClick={() => {
-                    window.location.href = "/"
-                }}>Return</a>
+                    <a className="btn btn-dark" onClick={() => {
+                        window.location.href = "/"
+                    }}>Return</a>
+                </div>
             </div>
-            </div>
-        )
+        );
     }
 
     return (

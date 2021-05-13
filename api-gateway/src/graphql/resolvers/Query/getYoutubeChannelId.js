@@ -1,7 +1,7 @@
 import YoutubeService from "#root/adapters/YoutubeService";
 
-const getYoutubeChannelIdResolver = async (obj, { userId, videoId }, context) => {
-    const body = await YoutubeService.getYoutubeChannelId({ userId, videoId });
+const getYoutubeChannelIdResolver = async (obj, { videoId }, context) => {
+    const body = await YoutubeService.getYoutubeChannelId({ videoId });
     return body;
 };
 

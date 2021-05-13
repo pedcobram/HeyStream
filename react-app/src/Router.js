@@ -12,6 +12,7 @@ import TwitchVods from './views/TwitchVods';
 import TwitchVod from './views/TwitchVod';
 import YoutubeVods from './views/YoutubeVods';
 import YoutubeVod from './views/YoutubeVod';
+import Search from './views/Search';
 
 function Router() {
     return (
@@ -23,6 +24,7 @@ function Router() {
             <Route exact path="/youtube" component={YoutubeStream} />
             <Route exact path="/youtube/landing" component={LandingYoutube} />
             <Route exact path="/myStreams" component={MyStreams} />
+            <Route exact path="/search" component={Search} />
 
             <Switch>
                 <Route exact path="/twitch/stream/:user" children={<TwitchStream/>}/>

@@ -194,3 +194,58 @@ html, body, #app {
     max-width: 1280px;
     overflow-y: hidden;
 }
+
+.queryImage {
+    width: 320px;
+    height: 180px;
+}
+
+.query {
+    overflow-y: auto;
+    overflow-wrap: break-word;
+}
+
+.queryInput {
+    width: 20rem;
+    margin-left: 30%;
+}
+
+.containerQuery {
+    display: flex;
+}
+
+.twitchQuery {
+    width: 50%;
+}
+
+.youtubeQuery {
+    flex-grow: 1;
+}
+
+.channelContainer {
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    height: 720px;
+    width: 100%;
+}
+
+.buttonRight {
+    float: right;
+}
+
+.centerAccount {
+    display: flex;
+    justify-content: center;
+}
+
+.marginBottonAccount {
+    margin-bottom: 1.5rem;
+}
+
+.marginBottonAccounts {
+    margin-bottom: 5rem;
+}
+
+.marginRightAccount {
+    margin-right: 0.5rem;
+}

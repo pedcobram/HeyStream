@@ -18,3 +18,5 @@ export { default as getTwitchStreamClips} from "./getTwitchStreamClips";
 export { default as getYoutubeClips} from "./getYoutubeClips";
 export { default as getYoutubeVideoInfo} from "./getYoutubeVideoInfo";
 export { default as getTwitchVideoInfo} from "./getTwitchVideoInfo";
+export { default as getTwitchQuery} from "./getTwitchQuery";
+export { default as getYoutubeQuery} from "./getYoutubeQuery";

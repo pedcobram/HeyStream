@@ -26,7 +26,7 @@ const checkChannelLive = async (channelId, access_token) => {
         headers: {
           'Authorization': 'Bearer ' + access_token,
         }
-      });
+    });
       
     return JSON.parse(response.body).items.length > 0 ? JSON.parse(response.body) : [];
   } else {

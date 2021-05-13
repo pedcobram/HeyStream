@@ -4,10 +4,18 @@ const TWITCH_SERVICE_URI = "http://twitch-service:7103";
 
 export default class TwitchService {
 
-    static async getTwitchVideoInfo({ userId, videoId }) {
+    static async getTwitchQuery({ query }) {
+        const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/search`, {
+            json: {
+                query
+            }
+        });
+        return body;
+    }
+
+    static async getTwitchVideoInfo({ videoId }) {
         const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/video/videoId`, {
             json: {
-                userId,
                 videoId
             }
         });
@@ -62,10 +70,9 @@ export default class TwitchService {
         return body.data[0];
     }
 
-    static async getTwitchVods({ userId, loginName}) {
+    static async getTwitchVods({ loginName }) {
         const body = await got.post(`${TWITCH_SERVICE_URI}/twitch/streams/vods`, {
             json: {
-                userId,
                 loginName
             }
         }).json();

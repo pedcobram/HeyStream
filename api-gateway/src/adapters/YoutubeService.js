@@ -4,10 +4,19 @@ const YOUTUBE_SERVICE_URI = "http://youtube-service:7102";
 
 export default class YoutubeService {
 
-    static async getYoutubeVideoInfo({ userId, videoId, next}) {
+    static async getYoutubeQuery({ query }) {
+        const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/search`, {
+            json: {
+                query
+            }
+        });
+
+        return JSON.parse(body.body);
+    }
+
+    static async getYoutubeVideoInfo({ videoId }) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/stream/videoId`, {
             json: {
-                userId,
                 videoId
             }
         });
@@ -30,10 +39,9 @@ export default class YoutubeService {
         return body;
     }
 
-    static async getYoutubeChannelId({ userId, videoId }) {
+    static async getYoutubeChannelId({ videoId }) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/stream/channelId`, {
             json: {
-                userId,
                 videoId
             }
         });
@@ -59,13 +67,13 @@ export default class YoutubeService {
         return body;
     }
 
-    static async getYoutubePastStreams({ userId, channelId }) {
+    static async getYoutubeVods({ channelId }) {
         const body = await got.post(`${YOUTUBE_SERVICE_URI}/youtube/streams/vods`, {
             json: {
-                userId,
                 channelId
             }
         });
+
         return JSON.parse(body.body).data;
     }
 

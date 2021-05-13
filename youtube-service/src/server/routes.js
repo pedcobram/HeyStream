@@ -12,28 +12,84 @@ const YOUTUBE_CLIENT_SECRET1 = accessEnv("YOUTUBE_CLIENT_SECRET", "AJoceRJtOCHqX
 const REDIRECT_URI = accessEnv("REDIRECT_URI", "http://localhost:7001");
 const REDIRECT_URI_LANDING1 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
-const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
+const YOUTUBE_CLIENT_ID2 = accessEnv("YOUTUBE_CLIENT_ID", "114734933279-i6im8fvce39v2ub9aj4h9igoj1rm448i.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET2 = accessEnv("YOUTUBE_CLIENT_SECRET", "H5Mlg7C8-R4ebHaa41HuuZ-k");
+const REDIRECT_URI_LANDING2 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
+
+const YOUTUBE_CLIENT_ID = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjhqmmtbd2vqde1ulp2mn7csd5.apps.googleusercontent.com");
+const YOUTUBE_CLIENT_SECRET = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
 const REDIRECT_URI_LANDING = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
 
-const YOUTUBE_CLIENT_ID3 = accessEnv("YOUTUBE_CLIENT_ID", "677542340493-s40cnjmjhqmmtbd2vqde1ulp2mn7csd5.apps.googleusercontent.com");
-const YOUTUBE_CLIENT_SECRET3 = accessEnv("YOUTUBE_CLIENT_SECRET", "T6Ii6L_F4UVGYBAWwvmv_hgS");
-const REDIRECT_URI_LANDING3 = accessEnv("REDIRECT_URI", "http://localhost:7001/youtube/landing");
-
 const setupRoutes = app => {
+
+  //Get channels by query
+  app.post("/youtube/search", async (req, res, next) => {
+    try {
+      
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
+
+      const response = await got.get('https://www.googleapis.com/youtube/v3/search'
+      + '?part=snippet'
+      + '&q=' + req.body.query
+      + '&type=channel'
+      + '&maxResults=20'
+      + '&order=relevance', 
+      {
+        headers: {
+          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
+      }});  
+
+      var liveArray = [];
+      
+      for (let item of JSON.parse(response.body).items) {
+        if (item.snippet.liveBroadcastContent == "live") {
+          const liveResponse = await got.get('https://www.googleapis.com/youtube/v3/search'
+            + '?part=snippet'
+            + '&channelId=' + item.snippet.channelId
+            + '&type=video'
+            + '&eventType=live'
+            + '&order=relevance', {
+              headers: {
+                'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token,
+              }
+          });
+          
+          liveArray.push(JSON.parse(liveResponse.body).items[0].id.videoId);
+        } else {
+          liveArray.push(null);
+        }
+      }
+
+      const data = JSON.parse(response.body)
+
+      return res.json({
+        data,
+        liveArray
+      });
+    } catch (e) {
+      return next(e);
+    }
+  });
 
   //Get past stream info from videoId
   app.post('/youtube/stream/videoId', async (req, res, next) => {
     try {
       
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
       
       const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
       + '?part=id,snippet'
       + '&id=' + req.body.videoId, {
         headers: {
-          'Authorization': 'Bearer ' + yt.access_token
+          'Authorization': 'Bearer ' + youtubeSession.dataValues.access_token
         }
       });
 
@@ -273,15 +329,18 @@ const setupRoutes = app => {
   //Get past stream info from channel Id
   app.post('/youtube/stream/channelId', async (req, res, next) => {
     try {
-      
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
+
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
+
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
       
       const response = await got.get('https://www.googleapis.com/youtube/v3/videos'
       + '?part=id,snippet'
       + '&id=' + req.body.videoId, {
         headers: {
-          'Authorization': 'Bearer ' + yt.access_token
+          'Authorization': 'Bearer ' + youtubeSession.access_token
         }
       });
 
@@ -445,10 +504,11 @@ const setupRoutes = app => {
   app.post("/youtube/streams/vods", async (req, res, next) => {
     try {
 
-      const yt = await YouTube.findOne({ attributes: {}, where: {
-        userId: req.body.userId}});
+      const youtubeAdmin = await User.findOne({ attributes: {}, where: {
+        email: 'admin@heystream.com'}});
 
-      const accessToken = yt.access_token;
+      const youtubeSession = await YouTube.findOne({ attributes: {}, where: {
+        userId: youtubeAdmin.dataValues.id}});
 
       const response = await got.get('https://www.googleapis.com/youtube/v3/search'
       + '?part=id,snippet'
@@ -458,7 +518,7 @@ const setupRoutes = app => {
       + '&maxResults=50'
       + '&order=date', {
         headers: {
-          Authorization: 'Bearer ' + accessToken
+          Authorization: 'Bearer ' + youtubeSession.dataValues.access_token
         }
       });
 

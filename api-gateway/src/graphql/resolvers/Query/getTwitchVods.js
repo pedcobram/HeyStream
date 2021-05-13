@@ -1,7 +1,7 @@
 import TwitchService from "#root/adapters/TwitchService";
 
-const getTwitchVodsResolver = async (obj, { userId, loginName }, context) => {
-    const body = await TwitchService.getTwitchVods({ userId, loginName });
+const getTwitchVodsResolver = async (obj, { loginName }, context) => {
+    const body = await TwitchService.getTwitchVods({ loginName });
     return body.vods;
 };
 

@@ -61,8 +61,8 @@ const typeDefs = gql`
     
     type Medium {
         url: String!
-        width: String!
-        height: String!
+        width: String
+        height: String
     }
 
     type Thumbnail {
@@ -83,6 +83,11 @@ const typeDefs = gql`
         nextPageToken: String
         pageInfo: PageInfo!
         items: [ItemStream!]!
+    }
+
+    type YoutubeQuery {
+        data: YoutubeStream
+        liveArray: [String]
     }
 
     type YoutubeResource {
@@ -188,6 +193,15 @@ const typeDefs = gql`
         snippet: SnippetStream!
     }
 
+    type TwitchQuery {
+        id: String
+        display_name: String
+        is_live: String
+        thumbnail_url: String
+        title: String
+        game_id: String
+    }
+
     type Mutation {
         createUser(email: String!, password: String!): User!
         createUserSession(email: String!, password: String!): UserSession!
@@ -213,13 +227,15 @@ const typeDefs = gql`
         getYoutubeStreams(userId: String!): YoutubeStreams!
         getTwitchUserInfo(userId: String!): TwitchUserInfo!
         getYoutubeUserInfo(userId: String!): YoutubeUserInfo!
-        getTwitchVods(userId: String!, loginName: String!): TwitchVods
-        getYoutubeVods(userId: String!, channelId: String!): YoutubeStream
-        getYoutubeChannelId(userId: String!, videoId: String!): YoutubeChannelId
+        getTwitchVods(loginName: String!): TwitchVods
+        getYoutubeVods(channelId: String!): YoutubeStream
+        getYoutubeChannelId(videoId: String!): YoutubeChannelId
         getTwitchStreamClips(userId: String!, videoId: String!): [TwitchClip!]!
         getYoutubeClips(userId: String!, videoId: String!, next: Boolean!): YoutubeClips
-        getYoutubeVideoInfo(userId: String!, videoId: String!): YoutubeVideo
-        getTwitchVideoInfo(userId: String!, videoId: String!): TwitchVideo
+        getYoutubeVideoInfo(videoId: String!): YoutubeVideo
+        getTwitchVideoInfo(videoId: String!): TwitchVideo
+        getTwitchQuery(query: String!): [TwitchQuery] 
+        getYoutubeQuery(query: String!): YoutubeQuery
     }
 `;
 

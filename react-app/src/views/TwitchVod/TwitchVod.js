@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import ReactPlayer from "react-player/twitch";
-import { useHistory } from "react-router-dom";
 
 import { useParams } from "react-router-dom";
 
@@ -22,8 +21,8 @@ const twitchQuery = gql`
 `;
 
 const twitchInfoQuery = gql`
-    query($userId: String!, $videoId: String!) {
-        getTwitchVideoInfo(userId: $userId, videoId: $videoId) {
+    query($videoId: String!) {
+        getTwitchVideoInfo(videoId: $videoId) {
             user_name
             title  
         }
@@ -31,8 +30,6 @@ const twitchInfoQuery = gql`
 `;
 
 const TwitchVod = () => {
-
-    if (!getCookie("userId")) useHistory().push("/");
 
     const loadingGif = require('../../images/loadingIcon.gif');
 
@@ -43,11 +40,11 @@ const TwitchVod = () => {
             userId: getCookie("userId"),
             videoId: vodId
         },
+        skip: !getCookie("userId")
     });
 
     const { data: twVideoInfo } = useQuery(twitchInfoQuery, {
-        variables: { 
-            userId: getCookie("userId"),
+        variables: {
             videoId: vodId
         },
     });
@@ -57,43 +54,48 @@ const TwitchVod = () => {
             <CustomNavBar/>
             <div className="center">
                 <div id="box" className="textNoClip">
-                    <h2 >{twVideoInfo?.getTwitchVideoInfo.title}</h2>
+                    <h3 >{twVideoInfo?.getTwitchVideoInfo.user_name} - {twVideoInfo?.getTwitchVideoInfo.title}</h3>
                     <ReactPlayer id="iframe" wrapper="div" width="1280px" height="720px" controls={true} playing={true} url={"https://www.twitch.tv/videos/{vodId}?t={timestamp}".replace('{vodId}', vodId).replace('{timestamp}', timestamp)} align="left"/>
                 </div>
-                {twLoading ? 
-                    <div id="box" className="clips marginClips" width="100%">
-                        <p style={{ position: "absolute",
-                            top: "30%",
-                            left: "95%",
-                            transform: "translate(-100%, 50%)" 
-                        }} className="loadingClips">Wait while we load some interesting clips</p>
-                        <img style={{
-                            position: "absolute",
-                            top: "25%",
-                            left: "84.5%"
-                        }} className="loadingClips" src={ loadingGif } width="100" height="100" />
+                {!getCookie("userId") && !getCookie("youtubeAccessToken") ? 
+                    <div id="box" className="clips" width="100%">
+                        Please log in and link your YouTube account to view and generate clips from this vod.
                     </div>
                 :
-                    <div id="box" className="clipContainer">
-                        <h2>Selected Clips</h2>
-                        <div className="clips">
-                            {twData?.getTwitchStreamClips.map((clip, idx) => (
-                                <div key={idx}> 
-                                    <div>Title: {clip.title}</div>
-                                    <div>
-                                        Timestamp: 
-                                        <a id="box" className="btn btn-dark" href={"/twitch/vod/" + vodId + "/" + clip.vod_timestamp}>{clip.vod_timestamp}</a>
-                                    </div>
-                                    <div>Game: {clip.game}</div>
-                                    <div>Number of impressions: {clip.impressions}</div>
-                                    <div>
-                                        <a className="btn btn-dark" href={clip.url} target="_blank">Watch on Twitch</a>
-                                    </div>
-                                    <br/>
-                                </div>
-                            ))} 
+                    twLoading ? 
+                        <div id="box" className="clips marginClips" width="100%">
+                            <p style={{ position: "absolute",
+                                top: "30%",
+                                left: "95%",
+                                transform: "translate(-100%, 50%)" 
+                            }} className="loadingClips">Wait while we load some interesting clips</p>
+                            <img style={{
+                                position: "absolute",
+                                top: "25%",
+                                left: "84.5%"
+                            }} className="loadingClips" src={ loadingGif } width="100" height="100" />
                         </div>
-                    </div>
+                    :
+                        <div id="box" className="clipContainer">
+                            <h2>Selected Clips</h2>
+                            <div className="clips">
+                                {twData?.getTwitchStreamClips.map((clip, idx) => (
+                                    <div key={idx}> 
+                                        <div>Title: {clip.title}</div>
+                                        <div>
+                                            Timestamp: 
+                                            <a id="box" className="btn btn-dark" href={"/twitch/vod/" + vodId + "/" + clip.vod_timestamp}>{clip.vod_timestamp}</a>
+                                        </div>
+                                        <div>Game: {clip.game}</div>
+                                        <div>Number of impressions: {clip.impressions}</div>
+                                        <div>
+                                            <a className="btn btn-dark" href={clip.url} target="_blank">Watch on Twitch</a>
+                                        </div>
+                                        <br/>
+                                    </div>
+                                ))} 
+                            </div>
+                        </div>
                 }                       
             </div>
             <br/>

@@ -1,6 +1,6 @@
 import got from "got";
 
-import { User, YouTube, YoutubeChat } from "#root/db/models";
+import { UserSession, YouTube, YoutubeChat } from "#root/db/models";
 
 import accessEnv from "#root/helpers/accessEnv";
 import generateUUID from "#root/helpers/generateUUID";
@@ -416,14 +416,14 @@ const setupRoutes = app => {
 
       const data = JSON.parse(response.body);
 
-      const user = await User.findOne({ attributes: {}, where: {
+      const user = await UserSession.findOne({ attributes: {}, where: {
         id: req.body.userId}});
 
       const created = await YouTube.create({
         id: generateUUID(),
         access_token: data.access_token,
         refresh_token: data.refresh_token,
-        userId: user.id
+        userId: user.dataValues.userId
       });
 
       return res.json({

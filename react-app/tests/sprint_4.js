@@ -1,6 +1,6 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 
-describe('Sprint 4 - Prueba 3', function() {
+describe('Sprint 4 - Prueba 1', function() {
   this.timeout(30000)
   let driver
   let vars
@@ -11,7 +11,7 @@ describe('Sprint 4 - Prueba 3', function() {
   afterEach(async function() {
     await driver.quit();
   })
-  it('Sprint 4 - Prueba 3', async function() {
+  it('Sprint 4 - Prueba 1', async function() {
     await driver.get("http://localhost:7001/")
     await driver.manage().window().setRect(1582, 702)
     await driver.findElement(By.id("myStreams")).click()
